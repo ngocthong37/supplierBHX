@@ -1,6 +1,6 @@
 package com.supplierBHX.entity;
 
-import com.supplierBHX.Enum.AccountType;
+import com.supplierBHX.Enum.NotificationType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,17 +12,17 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class Account {
+public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String userName;
-    private String password;
-    private Boolean status;
+    private String title;
+    private String message;
+    private Integer BHX;
+    private Enum<NotificationType> notificationType;
 
     @ManyToOne
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
-    private Enum<AccountType> accountType;
 
 }

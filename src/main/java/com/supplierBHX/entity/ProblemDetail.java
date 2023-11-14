@@ -1,6 +1,5 @@
 package com.supplierBHX.entity;
 
-import com.supplierBHX.Enum.AccountType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,17 +11,18 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class Account {
+public class ProblemDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String userName;
-    private String password;
-    private Boolean status;
-
     @ManyToOne
-    @JoinColumn(name = "supplier_id")
-    private Supplier supplier;
-    private Enum<AccountType> accountType;
+    @JoinColumn(name = "problem_id")
+    private Problem problem;
+    private String description;
+    @ManyToOne
+    @JoinColumn(name = "purchase_order_id")
+    private PurchaseOrder purchaseOrder;
+
+
 
 }
