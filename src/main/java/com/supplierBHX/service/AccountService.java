@@ -28,7 +28,5 @@ public class AccountService {
         else {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
         }
-
     }
-
 }

@@ -1,6 +1,6 @@
 package com.supplierBHX.security;
 
-import com.supplierBHX.repository.SupplierRepository;
+import com.supplierBHX.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,11 +17,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
-    private final SupplierRepository repository;
+    private final AccountRepository repository;
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> repository.findByEmail(username)
+        return username -> repository.findByUserName(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 

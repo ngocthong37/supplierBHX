@@ -24,6 +24,7 @@ public class Supplier {
     private Boolean sex;
     private String email;
 
+
     @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL)
     private List<Account> accounts;
 
