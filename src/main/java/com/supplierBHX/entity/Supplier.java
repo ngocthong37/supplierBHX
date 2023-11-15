@@ -1,5 +1,6 @@
 package com.supplierBHX.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,13 +25,14 @@ public class Supplier {
     private Boolean sex;
     private String email;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL)
     private List<Account> accounts;
-
 
     @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL)
     private List<Invoice> invoices;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL)
     private List<Quotation> quotations;
 
