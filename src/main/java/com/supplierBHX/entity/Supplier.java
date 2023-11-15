@@ -24,12 +24,9 @@ public class Supplier {
     private Boolean sex;
     private String email;
 
-
     @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL)
     private List<Account> accounts;
 
-    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL)
-    private List<Notification> notifications;
 
     @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL)
     private List<Invoice> invoices;
@@ -48,7 +45,4 @@ public class Supplier {
 
     @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL)
     private List<RatingProduct> ratingProducts;
-
-
-
 }

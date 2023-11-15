@@ -1,6 +1,5 @@
 package com.supplierBHX.service;
 
-import com.supplierBHX.entity.Account;
 import com.supplierBHX.entity.Invoice;
 import com.supplierBHX.entity.ResponseObject;
 import com.supplierBHX.repository.InvoiceRepository;
@@ -11,8 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 @Service
 public class InvoiceService {
