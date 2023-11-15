@@ -23,7 +23,8 @@ public class Quotation {
     private Double mass;
     private Date beginDate;
     private Date endDate;
-    private Enum<UnitType> unitType;
+    @Enumerated(EnumType.STRING)
+    private UnitType unitType;
     private String description;
     private String zoneDelivery;
     private Integer status;

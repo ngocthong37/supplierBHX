@@ -22,7 +22,8 @@ public class SupplyCapacity {
     private Integer productId;
     private Double number;
     private Double mass;
-    private Enum<UnitType> unitType;
+    @Enumerated(EnumType.STRING)
+    private UnitType unitType;
     private Date beginDate;
     private Date endDate;
     private String description;

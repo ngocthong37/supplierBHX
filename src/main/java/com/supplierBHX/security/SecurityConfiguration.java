@@ -43,6 +43,7 @@ public class SecurityConfiguration {
                                 "/swagger-ui.html"
                         ).permitAll()
                         .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), MANAGER.name())
+                        .requestMatchers("/api/v1/invoice/**").hasAnyRole(ADMIN.name())
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
