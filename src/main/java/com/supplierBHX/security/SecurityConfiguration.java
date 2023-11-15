@@ -42,16 +42,13 @@ public class SecurityConfiguration {
                                 "/webjars/**",
                                 "/swagger-ui.html"
                         ).permitAll()
-                        .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), MANAGER.name())
+                        .requestMatchers("/api/v1/supplier/**").hasAnyRole(ADMIN.name(), MANAGER.name())
                         .requestMatchers("/api/v1/invoice/**").hasAnyRole(ADMIN.name())
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
-
-        ;
         return http.build();
     }
 }

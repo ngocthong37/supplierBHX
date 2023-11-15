@@ -136,6 +136,7 @@ public class SupplierService {
                     supplyCapacity.setEndDate(quotation.getEndDate());
                     supplyCapacity.setUnitType(quotation.getUnitType());
                     supplyCapacity.setWarehouseDelivery("Dang test");
+                    supplyCapacity.setSupplier(quotation.getSupplier());
                     supplyCapacityRepository.save(supplyCapacity);
                 }
                 if (saveQuotation.getId() != null) {
@@ -178,6 +179,8 @@ public class SupplierService {
                     jsonObjectRequest.get("endDate").asText() : "";
             String warehouseDelivery = jsonObjectRequest.get("warehouseDelivery") != null ?
                     jsonObjectRequest.get("warehouseDelivery").asText() : "";
+
+
             SupplyCapacity supplyCapacity = new SupplyCapacity();
             supplyCapacity.setProductId(productId);
 
@@ -216,11 +219,11 @@ public class SupplierService {
     }
 
 
-    public ResponseEntity<ResponseObject> findAll() {
+    public ResponseEntity<ResponseObject> findAllQuotation() {
         Map<String, Object> results = new TreeMap<String, Object>();
-        List<Supplier> supplierList = null;
+        List<Quotation> supplierList = null;
         try {
-            supplierList = supplierInterface.findAll();
+            supplierList = quotationRepository.findAll();
         } catch (Exception e) {
             System.out.println("error: " + e);
         }
@@ -229,6 +232,61 @@ public class SupplierService {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", results));
         } else {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
+        }
+    }
+
+
+    public ResponseEntity<ResponseObject> findAllSupplyCapacity() {
+        Map<String, Object> results = new TreeMap<String, Object>();
+        List<SupplyCapacity> supplyCapacityList = null;
+        try {
+            supplyCapacityList = supplyCapacityRepository.findAll();
+        } catch (Exception e) {
+            System.out.println("error: " + e);
+        }
+        results.put("data", supplyCapacityList);
+        if (results.size() > 0) {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", results));
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
+        }
+    }
+
+    public ResponseEntity<Object> updateSupplyCapacityStatus(String json) {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            if (json == null || json.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ResponseObject("ERROR", "Empty JSON", ""));
+            }
+            JsonNode jsonObjectUpdate = objectMapper.readTree(json);
+            Integer supply_capacity_id = jsonObjectUpdate.get("supply_capacity_id") != null ?
+                    jsonObjectUpdate.get("supply_capacity_id").asInt() : 1;
+            Integer status = jsonObjectUpdate.get("status") != null ?
+                    jsonObjectUpdate.get("status").asInt() : 1;
+            Integer employeeId = jsonObjectUpdate.get("employeeId") != null ?
+                    jsonObjectUpdate.get("employeeId").asInt() : 1;
+
+            Optional<SupplyCapacity> optionalSupplyCapacity = supplyCapacityRepository.findById(supply_capacity_id);
+            if (optionalSupplyCapacity.isPresent()) {
+                SupplyCapacity supplyCapacity = optionalSupplyCapacity.get();
+                supplyCapacity.setEmployeeId(employeeId);
+                LocalDateTime now = LocalDateTime.now();
+                supplyCapacity.setDateConfirmed(LocalDate.from(now));
+                supplyCapacity.setStatus(status);
+                var saveSupplyCapacity = supplyCapacityRepository.save(supplyCapacity);
+                if (saveSupplyCapacity.getId() != null) {
+                    return ResponseEntity.status(HttpStatus.OK)
+                            .body(new ResponseObject("OK", "Successfully", ""));
+                }
+            }
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseObject("ERROR", "Can not update a status", ""));
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseObject("ERROR", "An error occurred", e.getMessage()));
         }
     }
 

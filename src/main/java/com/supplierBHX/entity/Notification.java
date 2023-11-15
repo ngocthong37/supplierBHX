@@ -22,7 +22,7 @@ public class Notification {
     private Enum<NotificationType> notificationType;
 
     @ManyToOne
-    @JoinColumn(name = "supplier_id")
-    private Supplier supplier;
+    @JoinColumn(name = "account_id")
+    private Account account;
 
 }

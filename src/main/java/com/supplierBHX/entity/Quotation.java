@@ -39,5 +39,9 @@ public class Quotation {
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 
+    @ManyToOne
+    @JoinColumn(name = "account_id")
+    private Account account;
+
 
 }

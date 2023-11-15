@@ -36,5 +36,4 @@ public class RatingProduct {
     @OneToMany(mappedBy = "ratingProduct", cascade = CascadeType.ALL)
     private List<RatingImage> ratingImages;
 
-
 }

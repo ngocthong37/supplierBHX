@@ -13,11 +13,16 @@ public class SupplierController {
     SupplierService supplierService;
 
 
-    @GetMapping("supplier/findAll")
-    ResponseEntity<ResponseObject> findAll() {
-        System.out.println("Come here");
-        return supplierService.findAll();
+    @GetMapping("quotation/findAll")
+    ResponseEntity<ResponseObject> findAllQuotation() {
+        return supplierService.findAllQuotation();
     }
+
+    @GetMapping("supply-capacity/findAll")
+    ResponseEntity<ResponseObject> findAllSupplyCapacity() {
+        return supplierService.findAllSupplyCapacity();
+    }
+
 
     @PostMapping("create-quotation")
     ResponseEntity<Object> createQuotation(@RequestBody String json) {
@@ -29,9 +34,14 @@ public class SupplierController {
         return supplierService.createRequestChangeSupplyCapacity(json);
     }
 
-    @PutMapping("update-status")
+    @PutMapping("quotation/update-status")
     ResponseEntity<Object> updateStatusQuotation(@RequestBody String json) {
         return supplierService.updateStatus(json);
+    }
+
+    @PutMapping("supply-capacity/update-status")
+    ResponseEntity<Object> updateStatusSupplyCapacity(@RequestBody String json) {
+        return supplierService.updateSupplyCapacityStatus(json);
     }
 
 
