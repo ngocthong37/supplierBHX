@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Date;
 
 @NoArgsConstructor
@@ -21,16 +23,17 @@ public class Quotation {
     private Integer productId;
     private Double number;
     private Double mass;
-    private Date beginDate;
-    private Date endDate;
-    private Enum<UnitType> unitType;
+    private LocalDate beginDate;
+    private LocalDate endDate;
+    @Enumerated(EnumType.STRING)
+    private UnitType unitType;
     private String description;
     private String zoneDelivery;
     private Integer status;
-    private Date dateConfirmed;
+    private LocalDate dateConfirmed;
     private Integer employeeId;
-    private Date createdAt;
-    private Date updatedAt;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "supplier_id")

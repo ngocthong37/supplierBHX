@@ -1,6 +1,5 @@
 package com.supplierBHX.entity;
 
-import com.supplierBHX.Enum.AccountType;
 import com.supplierBHX.Enum.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,13 +21,11 @@ public class Account implements UserDetails {
     private Integer id;
     private String userName;
     private String password;
-    private String email;
     private Boolean status;
 
     @ManyToOne
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
-    private Enum<AccountType> accountType;
 
     @Enumerated(EnumType.STRING)
     private Role role;
