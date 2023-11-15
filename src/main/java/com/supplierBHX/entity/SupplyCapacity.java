@@ -34,6 +34,8 @@ public class SupplyCapacity {
     private LocalDate dateConfirmed;
     private Timestamp createdAt;
     private Timestamp updatedAt;
+    private Integer employeeId;
+
     @ManyToOne
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
