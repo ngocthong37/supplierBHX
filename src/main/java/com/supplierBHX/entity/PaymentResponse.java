@@ -17,7 +17,6 @@ import java.time.LocalDate;
 @Setter
 @Entity
 public class PaymentResponse {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PaymentResponseService {
@@ -28,5 +29,16 @@ public class PaymentResponseService {
         else {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
         }
+    }
+
+    public ResponseEntity<ResponseObject> findById(Integer id) {
+        Optional<PaymentResponse> paymentResponse = paymentResponseRepository.findById(id);
+        if (paymentResponse.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", paymentResponse));
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
+        }
+
     }
 }
