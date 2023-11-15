@@ -36,5 +36,10 @@ public class RatingProduct {
     @OneToMany(mappedBy = "ratingProduct", cascade = CascadeType.ALL)
     private List<RatingImage> ratingImages;
 
+    @ManyToOne
+    @JoinColumn(name = "account_id")
+    private Account account;
+
+
 
 }
