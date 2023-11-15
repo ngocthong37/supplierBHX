@@ -28,10 +28,14 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
+        Supplier supplier = new Supplier();
+        supplier.setId(request.getSupplierId());
         var user = Account.builder()
                 .userName(request.getUserName())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
+                .status(request.getStatus())
+                .supplier(supplier)
                 .build();
         var savedUser = repository.save(user);
         var jwtToken = jwtService.generateToken(user);

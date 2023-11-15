@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Date;
 
 @NoArgsConstructor
@@ -24,14 +26,14 @@ public class SupplyCapacity {
     private Double mass;
     @Enumerated(EnumType.STRING)
     private UnitType unitType;
-    private Date beginDate;
-    private Date endDate;
+    private LocalDate beginDate;
+    private LocalDate endDate;
     private String description;
     private String warehouseDelivery;
     private Integer status;
-    private Date dateConfirmed;
-    private Date createdAt;
-    private Date updatedAt;
+    private LocalDate dateConfirmed;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
     @ManyToOne
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
