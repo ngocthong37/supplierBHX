@@ -26,8 +26,6 @@ public class RatingProduct {
     private Boolean cooperativeState;
     private Float ratingScore;
     private Float ratingAll;
-    private String feedBackFromSup;
-    private Date createdAt;
 
     @ManyToOne
     @JoinColumn(name = "supplier_id")
@@ -35,5 +33,8 @@ public class RatingProduct {
 
     @OneToMany(mappedBy = "ratingProduct", cascade = CascadeType.ALL)
     private List<RatingImage> ratingImages;
+
+
+
 
 }
