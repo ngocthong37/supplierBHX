@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
 
 @Data
 @Builder
@@ -22,6 +23,13 @@ public class Account implements UserDetails {
     private String userName;
     private String password;
     private Boolean status;
+
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+    private List<Notification> notifications;
+
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+    private List<Quotation> quotations;
+
 
     @ManyToOne
     @JoinColumn(name = "supplier_id")

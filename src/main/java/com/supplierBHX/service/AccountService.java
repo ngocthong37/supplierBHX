@@ -18,12 +18,10 @@ public class AccountService {
     AccountRepository accountRepository;
 
     public ResponseEntity<ResponseObject> findAll() {
-        Map<String, Object> results = new TreeMap<String, Object>();
         List<Account> accountList = null;
         accountList = accountRepository.findAll();
-        results.put("data", accountList);
-        if (results.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", results));
+        if (accountList.size() > 0) {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", accountList));
         }
         else {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
