@@ -1,20 +1,20 @@
-package com.supplierBHX.entity;
+package com.supplierBHX.dto;
 
-import jakarta.persistence.*;
+import com.supplierBHX.entity.GoodsReceivedNote;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@Entity
-public class GRNDetail {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class GRNDetailDTO {
     private Integer id;
+    private Integer goodsReceivedNoteID;
     private Integer productId;
     private Integer qualityProduct;
     private Integer statusProduct;
@@ -23,13 +23,7 @@ public class GRNDetail {
     private Integer numberReceived;
     private Integer numberDamage;
     private Integer numberMissing;
-
-    @ManyToOne
-    @JoinColumn(name = "grn_id")
-    private GoodsReceivedNote goodsReceivedNote;
-
-    @OneToOne
-    @JoinColumn(name = "purchaseOrder_id")
-    private PurchaseOrder purchaseOrder;
+    private Integer purchaseOrderId;
+    private Date createdAt;
 
 }
