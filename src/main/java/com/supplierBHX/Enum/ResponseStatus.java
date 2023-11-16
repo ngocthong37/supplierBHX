@@ -1,6 +1,6 @@
 package com.supplierBHX.Enum;
 
-public enum PaymentResponseStatus {
+public enum ResponseStatus {
     Consider,
     Confirm
 }

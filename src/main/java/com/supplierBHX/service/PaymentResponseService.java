@@ -1,9 +1,7 @@
 package com.supplierBHX.service;
 
 import com.supplierBHX.entity.PaymentResponse;
-import com.supplierBHX.entity.PaymentResponseDetail;
 import com.supplierBHX.entity.ResponseObject;
-import com.supplierBHX.repository.PaymentResponseDetailRepository;
 import com.supplierBHX.repository.PaymentResponseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,5 +38,28 @@ public class PaymentResponseService {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
         }
 
+    }
+
+    public PaymentResponse update(PaymentResponse newPaymentResponse, Integer id) {
+         return paymentResponseRepository
+                .findById(id)
+                .map(
+                        paymentR -> {
+                            paymentR.setPaymentResponseType(newPaymentResponse.getPaymentResponseType());
+                            paymentR.setPaymentResponseStatus(newPaymentResponse.getPaymentResponseStatus());
+                            paymentR.setUpdateDate(newPaymentResponse.getUpdateDate());
+                            paymentR.setNote(newPaymentResponse.getNote());
+                            paymentR.setPurchaseOrder(newPaymentResponse.getPurchaseOrder());
+                            paymentR.setAccount(newPaymentResponse.getAccount());
+                            paymentR.setUpdater(newPaymentResponse.getUpdater());
+                            paymentR.setPaymentStatus(newPaymentResponse.getPaymentStatus());
+                            return paymentResponseRepository.save(paymentR);
+                        })
+                .orElseGet(
+                        () -> paymentResponseRepository.save(newPaymentResponse));
+    }
+
+    public Object insert(PaymentResponse paymentResponse) {
+        return paymentResponseRepository.save(paymentResponse);
     }
 }
