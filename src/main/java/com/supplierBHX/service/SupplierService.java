@@ -3,13 +3,11 @@ package com.supplierBHX.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.supplierBHX.Enum.UnitType;
-import com.supplierBHX.entity.Quotation;
-import com.supplierBHX.entity.ResponseObject;
-import com.supplierBHX.entity.Supplier;
-import com.supplierBHX.entity.SupplyCapacity;
+import com.supplierBHX.entity.*;
 import com.supplierBHX.repository.QuotationRepository;
-import com.supplierBHX.repository.SupplierRepository;
 import com.supplierBHX.repository.SupplyCapacityRepository;
+import com.supplierBHX.repository.WarehouseDeliveryRepository;
+import com.supplierBHX.repository.ZoneDeliveryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,21 +17,22 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
+import java.util.*;
 
 @Service
 public class SupplierService {
-    @Autowired
-    private SupplierRepository supplierInterface;
-    
     @Autowired
     private QuotationRepository quotationRepository;
 
     @Autowired
     private SupplyCapacityRepository supplyCapacityRepository;
+
+    @Autowired
+    private ZoneDeliveryRepository zoneDeliveryRepository;
+
+    @Autowired
+    private WarehouseDeliveryRepository warehouseDeliveryRepository;
+
 
     public ResponseEntity<Object> createQuotation(String json) {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -60,9 +59,11 @@ public class SupplierService {
                     jsonObjectQuotation.get("endDate").asText() : "";
             String description = jsonObjectQuotation.get("description") != null ?
                     jsonObjectQuotation.get("description").asText() : "";
-            String zoneDelivery = jsonObjectQuotation.get("zoneDelivery") != null ?
-                    jsonObjectQuotation.get("zoneDelivery").asText() : "";
 
+            Double price = jsonObjectQuotation.get("price") != null ?
+                    jsonObjectQuotation.get("price").asDouble() : -1;
+
+            JsonNode zoneDeliveryList = jsonObjectQuotation.get("zoneDeliveryList");
 
             Quotation quotation = new Quotation();
             quotation.setProductId(productId);
@@ -78,8 +79,8 @@ public class SupplierService {
             quotation.setBeginDate(beginParsedDate);
             quotation.setEndDate(endParsedDate);
             quotation.setDescription(description);
-            quotation.setZoneDelivery(zoneDelivery);
             quotation.setMass(mass);
+            quotation.setPrice(price);
             LocalDateTime now = LocalDateTime.now();
             Timestamp timeNow = Timestamp.valueOf(now);
             quotation.setCreatedAt(timeNow);
@@ -87,16 +88,28 @@ public class SupplierService {
             quotation.setUpdatedAt(updateAt);
             quotation.setStatus(1);
 
+            List<ZoneDelivery> zoneDeliveries = new ArrayList<>();
+            if (zoneDeliveryList.isArray()) {
+                for (JsonNode zoneDeliveryJson : zoneDeliveryList) {
+                    ZoneDelivery zoneDelivery = new ZoneDelivery();
+                    zoneDelivery.setAddress(zoneDeliveryJson.get("address").asText());
+                    zoneDeliveries.add(zoneDelivery);
+                }
+            }
+
             Quotation saveQuotation = quotationRepository.save(quotation);
+            for (ZoneDelivery zoneDelivery : zoneDeliveries) {
+                zoneDelivery.setQuotation(saveQuotation);
+                zoneDeliveryRepository.save(zoneDelivery);
+            }
             if (saveQuotation.getId() != null) {
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(new ResponseObject("OK", "Successfully", ""));
-            }
-            else {
+            } else {
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(new ResponseObject("ERROR", "Can not create a quotation", ""));
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseObject("ERROR", "An error occurred", e.getMessage()));
         }
@@ -117,7 +130,6 @@ public class SupplierService {
                     jsonObjectUpdate.get("status").asInt() : 1;
             Integer employeeId = jsonObjectUpdate.get("employeeId") != null ?
                     jsonObjectUpdate.get("employeeId").asInt() : 1;
-
             Optional<Quotation> optionalQuotation = quotationRepository.findById(quotation_id);
             if (optionalQuotation.isPresent()) {
                 Quotation quotation = optionalQuotation.get();
@@ -135,7 +147,6 @@ public class SupplierService {
                     supplyCapacity.setBeginDate(quotation.getBeginDate());
                     supplyCapacity.setEndDate(quotation.getEndDate());
                     supplyCapacity.setUnitType(quotation.getUnitType());
-                    supplyCapacity.setWarehouseDelivery("Dang test");
                     supplyCapacity.setSupplier(quotation.getSupplier());
                     supplyCapacityRepository.save(supplyCapacity);
                 }
@@ -147,8 +158,7 @@ public class SupplierService {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseObject("ERROR", "Can not update a quotation", ""));
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseObject("ERROR", "An error occurred", e.getMessage()));
         }
@@ -177,9 +187,7 @@ public class SupplierService {
                     jsonObjectRequest.get("beginDate").asText() : "";
             String endDate = jsonObjectRequest.get("endDate") != null ?
                     jsonObjectRequest.get("endDate").asText() : "";
-            String warehouseDelivery = jsonObjectRequest.get("warehouseDelivery") != null ?
-                    jsonObjectRequest.get("warehouseDelivery").asText() : "";
-
+            JsonNode warehouseDeliveryList = jsonObjectRequest.get("warehouseDeliveryList");
 
             SupplyCapacity supplyCapacity = new SupplyCapacity();
             supplyCapacity.setProductId(productId);
@@ -194,7 +202,6 @@ public class SupplierService {
             supplyCapacity.setUnitType(UnitType.valueOf(unit));
             supplyCapacity.setBeginDate(beginParsedDate);
             supplyCapacity.setEndDate(endParsedDate);
-            supplyCapacity.setWarehouseDelivery(warehouseDelivery);
             supplyCapacity.setMass(mass);
             LocalDateTime now = LocalDateTime.now();
             Timestamp timeNow = Timestamp.valueOf(now);
@@ -203,16 +210,30 @@ public class SupplierService {
             supplyCapacity.setUpdatedAt(updateAt);
             supplyCapacity.setStatus(1);
 
+
+            List<WarehouseDelivery> warehouseDeliveries = new ArrayList<>();
+            if (warehouseDeliveryList.isArray()) {
+                for (JsonNode warehouseDeliveryJson : warehouseDeliveryList) {
+                    WarehouseDelivery warehouseDelivery = new WarehouseDelivery();
+                    String address = warehouseDeliveryJson.get("address").asText();
+                    warehouseDelivery.setAddress(address);
+                    warehouseDeliveries.add(warehouseDelivery);
+                }
+            }
             SupplyCapacity saveSupplyCapacity = supplyCapacityRepository.save(supplyCapacity);
+            for (WarehouseDelivery warehouseDelivery: warehouseDeliveries) {
+                warehouseDelivery.setSupplyCapacity(supplyCapacity);
+                warehouseDeliveryRepository.save(warehouseDelivery);
+            }
+
             if (saveSupplyCapacity.getId() != null) {
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(new ResponseObject("OK", "Successfully", ""));
-            }
-            else {
+            } else {
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(new ResponseObject("ERROR", "Can not create a request", ""));
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseObject("ERROR", "An error occurred", e.getMessage()));
         }
@@ -220,16 +241,32 @@ public class SupplierService {
 
 
     public ResponseEntity<ResponseObject> findAllQuotation() {
-        Map<String, Object> results = new TreeMap<String, Object>();
         List<Quotation> supplierList = null;
         try {
             supplierList = quotationRepository.findAll();
         } catch (Exception e) {
             System.out.println("error: " + e);
         }
-        results.put("data", supplierList);
-        if (results.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", results));
+        if (supplierList.size() > 0) {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", supplierList));
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
+        }
+    }
+
+    public ResponseEntity<ResponseObject> findQuotationById(Integer id) {
+        Optional<Quotation> quotation = quotationRepository.findById(id);
+        if (!quotation.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", quotation));
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
+        }
+    }
+
+    public ResponseEntity<ResponseObject> findSupplyCapacityById(Integer id) {
+        Optional<Quotation> supplyCapacity = quotationRepository.findById(id);
+        if (!supplyCapacity.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", supplyCapacity));
         } else {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
         }
@@ -245,7 +282,7 @@ public class SupplierService {
             System.out.println("error: " + e);
         }
         results.put("data", supplyCapacityList);
-        if (results.size() > 0) {
+        if (!results.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", results));
         } else {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
@@ -254,7 +291,6 @@ public class SupplierService {
 
     public ResponseEntity<Object> updateSupplyCapacityStatus(String json) {
         ObjectMapper objectMapper = new ObjectMapper();
-
         try {
             if (json == null || json.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -283,11 +319,11 @@ public class SupplierService {
             }
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseObject("ERROR", "Can not update a status", ""));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseObject("ERROR", "An error occurred", e.getMessage()));
         }
     }
+
 
 }

@@ -18,6 +18,16 @@ public class SupplierController {
         return supplierService.findAllQuotation();
     }
 
+    @GetMapping("quotation/findById/{id}")
+    ResponseEntity<ResponseObject> findQuotationById(@PathVariable Integer id) {
+        return supplierService.findQuotationById(id);
+    }
+
+    @GetMapping("supply-capacity/findById/{id}")
+    ResponseEntity<ResponseObject> findSupplyCapacityById(@PathVariable Integer id) {
+        return supplierService.findSupplyCapacityById(id);
+    }
+
     @GetMapping("supply-capacity/findAll")
     ResponseEntity<ResponseObject> findAllSupplyCapacity() {
         return supplierService.findAllSupplyCapacity();

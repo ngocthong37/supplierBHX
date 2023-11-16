@@ -24,10 +24,11 @@ public class PurchaseOrder {
     private Date receiveDate;
     private Date createdAt;
     private Double discount;
-    private Enum<UnitType> unitType;
-    private Integer confirmStatus;
+    @Enumerated(EnumType.STRING)
+    private UnitType unitType;
+    private String confirmStatus;
     private Date confirmDate;
-    private Date deliveryStatus;
+    private String deliveryStatus;
     private Date newDeliveryDate;
     private Date newReceiveDate;
     private Date updatedAt;
@@ -47,8 +48,4 @@ public class PurchaseOrder {
 
     @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL)
     private List<ProblemDetail> problemDetails;
-
-
-
-
 }
