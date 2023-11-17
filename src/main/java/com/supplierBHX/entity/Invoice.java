@@ -1,6 +1,7 @@
 package com.supplierBHX.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.supplierBHX.Enum.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,7 +21,8 @@ public class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Integer paymentStatus;
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus;
     private LocalDate paymentDate;
     private String image;
     private Integer invoiceNumber;
