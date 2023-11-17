@@ -23,6 +23,7 @@ public class Account implements UserDetails {
     private String userName;
     private String password;
     private Boolean status;
+    private String email;
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     private List<Notification> notifications;
