@@ -4,12 +4,15 @@ import com.supplierBHX.entity.PaymentResponse;
 import com.supplierBHX.entity.ResponseObject;
 import com.supplierBHX.service.PaymentResponseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Objects;
 
 @RestController
@@ -23,6 +26,15 @@ public class PaymentResponseController {
     ResponseEntity<ResponseObject> findAll() {
         return paymentResponseService.findAll();
     }
+//    @GetMapping("/findAllFilter")
+//    ResponseEntity<ResponseObject> findAllFilter(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size,
+//            @RequestParam(required = false) Map<String, String> filters
+//    ) {
+//        Pageable pageable = PageRequest.of(page, size);
+//        return paymentResponseService.findAllFilter(pageable, filters);
+//    }
 
     @GetMapping("/findById/{id}")
     ResponseEntity<ResponseObject> findById(@PathVariable Integer id){
