@@ -10,6 +10,8 @@ import com.supplierBHX.security.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.text.RandomStringGenerator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,9 +20,14 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+
+    @Autowired
+    EmailService emailService;
+
     private final AccountRepository repository;
     private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
@@ -30,14 +37,20 @@ public class AuthService {
     public AuthenticationResponse register(RegisterRequest request) {
         Supplier supplier = new Supplier();
         supplier.setId(request.getSupplierId());
+        var password = generateRandomPassword(10);
         var user = Account.builder()
                 .userName(request.getUserName())
-                .password(passwordEncoder.encode(request.getPassword()))
+                .password(passwordEncoder.encode(password))
                 .role(request.getRole())
                 .status(request.getStatus())
+                .email(request.getEmail())
                 .supplier(supplier)
                 .build();
         var savedUser = repository.save(user);
+        if (savedUser.getPassword() != null) {
+            String[] cc = {"n20dccn152@student.ptithcm.edu.vn"};
+            emailService.sendMail("thongnguyenngoc3738@gmail.com", cc, "Tài khoản truy cập website của bạn đã được tạo", "\nTên tài khoản: " + savedUser.getUsername() + "\n Pasword: " + password );
+        }
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(savedUser, jwtToken);
@@ -114,6 +127,14 @@ public class AuthService {
                 new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
             }
         }
+    }
+
+    public static String generateRandomPassword(int length) {
+        RandomStringGenerator pwdGenerator = new RandomStringGenerator.Builder()
+                .withinRange('0', 'z')
+                .filteredBy(Character::isLowerCase)
+                .build();
+        return pwdGenerator.generate(length);
     }
 
 
