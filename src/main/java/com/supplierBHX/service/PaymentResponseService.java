@@ -4,12 +4,15 @@ import com.supplierBHX.entity.PaymentResponse;
 import com.supplierBHX.entity.ResponseObject;
 import com.supplierBHX.repository.PaymentResponseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -62,4 +65,22 @@ public class PaymentResponseService {
     public Object insert(PaymentResponse paymentResponse) {
         return paymentResponseRepository.save(paymentResponse);
     }
+
+//    public ResponseEntity<ResponseObject> findAllFilter(Pageable pageable, Map<String, String> filters) {
+//        Page<PaymentResponse> paymentResponsePage;
+//
+//        if (filters != null && !filters.isEmpty()) {
+//            paymentResponsePage = paymentResponseRepository.findByFilters(filters, pageable);
+//        } else {
+//            paymentResponsePage = paymentResponseRepository.findAll(pageable);
+//        }
+//
+//        if (paymentResponsePage.hasContent()) {
+//            return ResponseEntity.status(HttpStatus.OK)
+//                    .body(new ResponseObject("OK", "Successfully", paymentResponsePage.getContent()));
+//        } else {
+//            return ResponseEntity.status(HttpStatus.OK)
+//                    .body(new ResponseObject("Not found", "Not found", ""));
+//        }
+//    }
 }
