@@ -14,15 +14,13 @@ import java.util.Map;
 
 public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
 
-    @Query(value = "SELECT i FROM Invoice i WHERE " +
+    @Query("SELECT i FROM Invoice i WHERE " +
             "(:paymentStatus IS NULL OR i.paymentStatus IN :paymentStatus) AND " +
-            "(CAST(:paymentDateFrom AS date) IS NULL OR i.paymentDate >= CAST(:paymentDateFrom AS date)) AND " +
-            "(CAST(:paymentDateFrom AS date) IS NULL OR i.paymentDate <= CAST(:paymentDateTo AS date))")
+            "(cast(:paymentDateFrom as date) IS NULL OR i.paymentDate >= :paymentDateFrom) AND " +
+            "(cast(:paymentDateTo as date) IS NULL OR i.paymentDate <= :paymentDateTo)")
     Page<Invoice> findByFilters(
             @Param("paymentStatus") List<PaymentStatus> paymentStatus,
             @Param("paymentDateFrom") LocalDate paymentDateFrom,
             @Param("paymentDateTo") LocalDate paymentDateTo,
             Pageable pageable);
-
-
 }

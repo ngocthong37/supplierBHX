@@ -23,14 +23,17 @@ public class Invoice {
     private Integer id;
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
+    @Temporal(TemporalType.DATE)
     private LocalDate paymentDate;
     private String image;
     private Integer invoiceNumber;
 
+    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "purchaseOrder_id")
     private PurchaseOrder purchaseOrder;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
