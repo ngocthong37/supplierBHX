@@ -1,6 +1,7 @@
 package com.supplierBHX.service;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.supplierBHX.Enum.TokenType;
 import com.supplierBHX.entity.*;
@@ -13,12 +14,15 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.text.RandomStringGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Optional;
 
 
 @Service
@@ -27,6 +31,9 @@ public class AuthService {
 
     @Autowired
     EmailService emailService;
+
+    @Autowired
+    AccountRepository accountRepository;
 
     private final AccountRepository repository;
     private final TokenRepository tokenRepository;
@@ -49,7 +56,7 @@ public class AuthService {
         var savedUser = repository.save(user);
         if (savedUser.getPassword() != null) {
             String[] cc = {"n20dccn152@student.ptithcm.edu.vn"};
-            emailService.sendMail("thongnguyenngoc3738@gmail.com", cc, "Tài khoản truy cập website của bạn đã được tạo", "\nTên tài khoản: " + savedUser.getUsername() + "\n Pasword: " + password );
+            emailService.sendMail(savedUser.getEmail(), cc, "Tài khoản truy cập website của bạn đã được tạo", "\nTên tài khoản: " + savedUser.getUsername() + "\n Pasword: " + password );
         }
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
@@ -137,5 +144,37 @@ public class AuthService {
         return pwdGenerator.generate(length);
     }
 
-
+    public ResponseEntity<Object> updatePassword(String json) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            if (json == null || json.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ResponseObject("ERROR", "Empty JSON", ""));
+            }
+            JsonNode jsonObjectUpdate = objectMapper.readTree(json);
+            Integer accountId = jsonObjectUpdate.get("accountId") != null ?
+                    jsonObjectUpdate.get("accountId").asInt() : -1;
+            String enteredPassword = jsonObjectUpdate.get("oldPassword") != null ?
+                    jsonObjectUpdate.get("oldPassword").asText() : "";
+            String newPassword = jsonObjectUpdate.get("newPassword") != null ?
+                    jsonObjectUpdate.get("newPassword").asText() : "";
+            Optional<Account> optionalAccount = accountRepository.findById(accountId);
+            if (optionalAccount.isPresent()) {
+                Account account = optionalAccount.get();
+                if (passwordEncoder.matches(enteredPassword, account.getPassword())) {
+                    account.setPassword(passwordEncoder.encode(newPassword));
+                    accountRepository.save(account);
+                    return ResponseEntity.ok(new ResponseObject("SUCCESS", "Password updated", ""));
+                } else {
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                            .body(new ResponseObject("ERROR", "Incorrect old password", ""));
+                }
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseObject("ERROR", "Account not found", ""));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseObject("ERROR", "An error occurred", e.getMessage()));
+        }
+    }
 }

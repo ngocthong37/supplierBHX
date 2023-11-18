@@ -45,6 +45,7 @@ public class Quotation {
     @JoinColumn(name = "account_id")
     private Account account;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "quotation",  cascade = CascadeType.ALL)
     private List<ZoneDelivery> zoneDeliveryList;
 }

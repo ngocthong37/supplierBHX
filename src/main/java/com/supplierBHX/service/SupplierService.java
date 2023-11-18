@@ -59,7 +59,8 @@ public class SupplierService {
                     jsonObjectQuotation.get("endDate").asText() : "";
             String description = jsonObjectQuotation.get("description") != null ?
                     jsonObjectQuotation.get("description").asText() : "";
-
+            Integer accountId = jsonObjectQuotation.get("accountId") != null ?
+                    jsonObjectQuotation.get("accountId").asInt() : 1;
             Double price = jsonObjectQuotation.get("price") != null ?
                     jsonObjectQuotation.get("price").asDouble() : -1;
 
@@ -81,6 +82,10 @@ public class SupplierService {
             quotation.setDescription(description);
             quotation.setMass(mass);
             quotation.setPrice(price);
+            Account account = new Account();
+            account.setId(accountId);
+
+            quotation.setAccount(account);
             LocalDateTime now = LocalDateTime.now();
             Timestamp timeNow = Timestamp.valueOf(now);
             quotation.setCreatedAt(timeNow);

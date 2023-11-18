@@ -34,12 +34,12 @@ public class SupplierController {
     }
 
 
-    @PostMapping("create-quotation")
+    @PostMapping("quotation/create")
     ResponseEntity<Object> createQuotation(@RequestBody String json) {
         return supplierService.createQuotation(json);
     }
 
-    @PostMapping("create-request-change")
+    @PostMapping("supply-capacity/create-request-change")
     ResponseEntity<Object> createRequestChangeSupplyCapacity(@RequestBody String json) {
         return supplierService.createRequestChangeSupplyCapacity(json);
     }
