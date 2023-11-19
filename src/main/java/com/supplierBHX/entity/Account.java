@@ -31,6 +31,9 @@ public class Account implements UserDetails {
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     private List<Quotation> quotations;
 
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+    private List<SupplyCapacity> supplyCapacities;
+
 
     @ManyToOne
     @JoinColumn(name = "supplier_id")
