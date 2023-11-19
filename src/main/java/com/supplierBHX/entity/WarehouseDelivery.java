@@ -16,6 +16,8 @@ public class WarehouseDelivery {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    private Integer number;
+
     @ManyToOne
     @JoinColumn(name = "supply_capacity_id")
     private SupplyCapacity supplyCapacity;

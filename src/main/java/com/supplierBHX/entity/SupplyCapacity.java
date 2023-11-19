@@ -2,6 +2,7 @@ package com.supplierBHX.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.supplierBHX.Enum.StatusType;
 import com.supplierBHX.Enum.UnitType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,7 +12,6 @@ import lombok.Setter;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @NoArgsConstructor
@@ -25,12 +25,12 @@ public class SupplyCapacity {
     private Integer id;
     private Integer productId;
     private Double number;
-    private Double mass;
     @Enumerated(EnumType.STRING)
     private UnitType unitType;
     private LocalDate beginDate;
     private LocalDate endDate;
-    private Integer status;
+    @Enumerated(EnumType.STRING)
+    private StatusType statusType;
     private LocalDate dateConfirmed;
     private Timestamp createdAt;
     private Timestamp updatedAt;
@@ -43,5 +43,11 @@ public class SupplyCapacity {
 
     @OneToMany(mappedBy = "supplyCapacity", cascade = CascadeType.ALL)
     private List<WarehouseDelivery> warehouseDeliveries;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "account_id")
+    private Account account;
+
 
 }

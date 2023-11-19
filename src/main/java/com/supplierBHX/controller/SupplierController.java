@@ -39,7 +39,7 @@ public class SupplierController {
         return supplierService.createQuotation(json);
     }
 
-    @PostMapping("supply-capacity/create-request-change")
+    @PostMapping("supply-capacity/create")
     ResponseEntity<Object> createRequestChangeSupplyCapacity(@RequestBody String json) {
         return supplierService.createRequestChangeSupplyCapacity(json);
     }

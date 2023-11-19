@@ -1,6 +1,7 @@
 package com.supplierBHX.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.supplierBHX.Enum.StatusType;
 import com.supplierBHX.Enum.UnitType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -23,14 +24,14 @@ public class Quotation {
     private Integer id;
     private Integer productId;
     private Double number;
-    private Double mass;
     private Double price;
     private LocalDate beginDate;
     private LocalDate endDate;
     @Enumerated(EnumType.STRING)
     private UnitType unitType;
     private String description;
-    private Integer status;
+    @Enumerated(EnumType.STRING)
+    private StatusType quotationStatusType;
     private LocalDate dateConfirmed;
     private Integer employeeId;
     private Timestamp createdAt;
@@ -41,6 +42,7 @@ public class Quotation {
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;
