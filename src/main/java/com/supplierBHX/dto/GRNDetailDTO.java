@@ -1,6 +1,7 @@
 package com.supplierBHX.dto;
 
 import com.supplierBHX.entity.GoodsReceivedNote;
+import com.supplierBHX.entity.PurchaseOrderDetail;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,6 @@ import java.util.Date;
 @Setter
 public class GRNDetailDTO {
     private Integer id;
-    private Integer goodsReceivedNoteID;
     private Integer productId;
     private Integer qualityProduct;
     private Integer statusProduct;
@@ -23,7 +23,6 @@ public class GRNDetailDTO {
     private Integer numberReceived;
     private Integer numberDamage;
     private Integer numberMissing;
-    private Integer purchaseOrderId;
-    private Date createdAt;
+    private GoodsReceivedNote goodsReceivedNote;
 
 }

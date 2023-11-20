@@ -19,7 +19,8 @@ public class Notification {
     private String title;
     private String message;
     private Integer BHX;
-    private Enum<NotificationType> notificationType;
+    @Enumerated(EnumType.STRING)
+    private NotificationType notificationType;
 
     @ManyToOne
     @JoinColumn(name = "account_id")

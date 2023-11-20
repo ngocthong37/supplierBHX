@@ -16,8 +16,8 @@ public class GRNDetailController {
     @Autowired
     private GRNDetailService grnDetailService;
 
-    @GetMapping("grnDetailDTOByProductId/{productId}")
-    ResponseEntity<ResponseObject> findAllGRNDtailDTOByProductId(@PathVariable Integer productId) {
-        return grnDetailService.findAllGRNDtailDTOByProductId(productId);
+    @GetMapping("grnDetailByProductId/{productId}")
+    ResponseEntity<ResponseObject> findAllGRNDetailByProductId(@PathVariable Integer productId) {
+        return grnDetailService.findAllGRNDetailByProductId(productId);
     }
 }

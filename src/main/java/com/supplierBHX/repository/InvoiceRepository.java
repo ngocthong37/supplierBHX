@@ -10,16 +10,17 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
 
     @Query("SELECT i FROM Invoice i WHERE " +
+            "((:search IS NULL) OR (CAST(i.invoiceNumber AS string) LIKE %:search%) OR " +
+            "(CAST(i.purchaseOrder.id AS string) LIKE %:search%)) AND" +
             "(:paymentStatus IS NULL OR i.paymentStatus IN :paymentStatus) AND " +
             "(cast(:paymentDateFrom as date) IS NULL OR i.paymentDate >= :paymentDateFrom) AND " +
             "(cast(:paymentDateTo as date) IS NULL OR i.paymentDate <= :paymentDateTo)")
     Page<Invoice> findByFilters(
-            @Param("paymentStatus") List<PaymentStatus> paymentStatus,
+            @Param("search") String search, @Param("paymentStatus") List<PaymentStatus> paymentStatus,
             @Param("paymentDateFrom") LocalDate paymentDateFrom,
             @Param("paymentDateTo") LocalDate paymentDateTo,
             Pageable pageable);

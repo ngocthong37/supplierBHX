@@ -6,17 +6,23 @@ import com.supplierBHX.service.PaymentResponseDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/api/v1")
+@RequestMapping(value = "/api/v1/paymentResponseDetail")
 public class PaymentResponseDetailController {
     @Autowired
     private PaymentResponseDetailService paymentResponseDetailService;
 
-    @GetMapping("/paymentResponseDetail/findAll")
+    @GetMapping("/findAll")
     ResponseEntity<ResponseObject> findAll() {
         return paymentResponseDetailService.findAll();
+    }
+
+    @GetMapping("/findByPaymentResponseId/{paymentResponseId}")
+    ResponseEntity<ResponseObject> findByPaymentResponseId(@PathVariable Integer paymentResponseId){
+        return paymentResponseDetailService.findByPaymentResponseId(paymentResponseId);
     }
 }
