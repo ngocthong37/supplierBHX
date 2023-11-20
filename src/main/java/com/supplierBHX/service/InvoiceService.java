@@ -1,9 +1,11 @@
 package com.supplierBHX.service;
 
 import com.supplierBHX.Enum.PaymentStatus;
+import com.supplierBHX.dto.InvoiceDTO;
 import com.supplierBHX.entity.Invoice;
 import com.supplierBHX.entity.ResponseObject;
 import com.supplierBHX.repository.InvoiceRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,11 +26,14 @@ public class InvoiceService {
     @Autowired
     private InvoiceRepository invoiceRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     public ResponseEntity<ResponseObject> findAll() {
-        List<Invoice> invoiceList = new ArrayList<Invoice>();
-        invoiceList = invoiceRepository.findAll();
-        if (!invoiceList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", invoiceList));
+        List<InvoiceDTO> invoiceDTOList = new ArrayList<InvoiceDTO>();
+        invoiceDTOList = invoiceRepository.findAll().stream().map(invoice -> modelMapper.map(invoice, InvoiceDTO.class)).toList();
+        if (!invoiceDTOList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", invoiceDTOList));
         }
         else {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
@@ -41,6 +46,7 @@ public class InvoiceService {
         if (filters != null && !filters.isEmpty()) {
             Map<String, Object> convertedFilters = convertFilters(filters);
             invoicePage = invoiceRepository.findByFilters(
+                    (String) convertedFilters.get("search"),
                     (List<PaymentStatus>) convertedFilters.get("paymentStatusList"),
                     (LocalDate) convertedFilters.get("paymentDateFrom"),
                     (LocalDate) convertedFilters.get("paymentDateTo"),
@@ -50,12 +56,17 @@ public class InvoiceService {
         }
 
         return invoicePage.hasContent() ?
-                ResponseEntity.ok(new ResponseObject("OK", "Successfully", invoicePage.getContent())) :
+                ResponseEntity.ok(new ResponseObject("OK", "Successfully", invoicePage.getContent().stream().map(invoice -> modelMapper.map(invoice, InvoiceDTO.class)).toList())) :
                 ResponseEntity.ok(new ResponseObject("Not found", "Not found", ""));
     }
 
     private Map<String, Object> convertFilters(Map<String, Object> filters) {
         Map<String, Object> convertedFilters = new HashMap<>();
+
+        if (filters.containsKey("search")) {
+            String invoiceNumber = (String) filters.get("search");
+            convertedFilters.put("search", invoiceNumber);
+        }
 
         if (filters.containsKey("paymentStatus")) {
             String paymentStatusStrings = (String) filters.get("paymentStatus");

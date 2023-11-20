@@ -29,7 +29,7 @@ public class GRNDetail {
     private GoodsReceivedNote goodsReceivedNote;
 
     @OneToOne
-    @JoinColumn(name = "purchaseOrder_id")
-    private PurchaseOrder purchaseOrder;
+    @JoinColumn(name = "purchaseOrderDetail_id")
+    private PurchaseOrderDetail purchaseOrderDetail;
 
 }

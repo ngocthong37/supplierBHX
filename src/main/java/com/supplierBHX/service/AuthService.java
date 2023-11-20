@@ -55,10 +55,10 @@ public class AuthService {
                 .build();
         var savedUser = repository.save(user);
         // send account information to supplier's email
-//        if (savedUser.getPassword() != null) {
-//            String[] cc = {"n20dccn152@student.ptithcm.edu.vn"};
-//            emailService.sendMail(savedUser.getEmail(), cc, "Tài khoản truy cập website của bạn đã được tạo", "\nTên tài khoản: " + savedUser.getUsername() + "\n Pasword: " + password );
-//        }
+        if (savedUser.getPassword() != null) {
+            String[] cc = {"n20dccn152@student.ptithcm.edu.vn"};
+            emailService.sendMail(savedUser.getEmail(), cc, "Tài khoản truy cập website của bạn đã được tạo", "\nTên tài khoản: " + savedUser.getUsername() + "\n Pasword: " + password );
+        }
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(savedUser, jwtToken);

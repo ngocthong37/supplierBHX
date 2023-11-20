@@ -1,8 +1,11 @@
 package com.supplierBHX.service;
 
+import com.supplierBHX.dto.PaymentResponseDTO;
+import com.supplierBHX.dto.RatingFeedbackDTO;
 import com.supplierBHX.entity.PaymentResponse;
 import com.supplierBHX.entity.ResponseObject;
 import com.supplierBHX.repository.PaymentResponseRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PaymentResponseService {
@@ -21,11 +25,14 @@ public class PaymentResponseService {
     @Autowired
     private PaymentResponseRepository paymentResponseRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     public ResponseEntity<ResponseObject> findAll() {
         List<PaymentResponse> paymentResponselList = new ArrayList<PaymentResponse>();
         paymentResponselList = paymentResponseRepository.findAll();
         if (!paymentResponselList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", paymentResponselList));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", paymentResponselList.stream().map(paymentResponse -> modelMapper.map(paymentResponse, PaymentResponseDTO.class)).toList()));
         }
         else {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
@@ -35,7 +42,7 @@ public class PaymentResponseService {
     public ResponseEntity<ResponseObject> findById(Integer id) {
         Optional<PaymentResponse> paymentResponse = paymentResponseRepository.findById(id);
         if (paymentResponse.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", paymentResponse));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", paymentResponse.stream().map(paymentResponse1 -> modelMapper.map(paymentResponse1, PaymentResponseDTO.class)).collect(Collectors.toList())));
         }
         else {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
@@ -66,21 +73,14 @@ public class PaymentResponseService {
         return paymentResponseRepository.save(paymentResponse);
     }
 
-//    public ResponseEntity<ResponseObject> findAllFilter(Pageable pageable, Map<String, String> filters) {
-//        Page<PaymentResponse> paymentResponsePage;
-//
-//        if (filters != null && !filters.isEmpty()) {
-//            paymentResponsePage = paymentResponseRepository.findByFilters(filters, pageable);
-//        } else {
-//            paymentResponsePage = paymentResponseRepository.findAll(pageable);
-//        }
-//
-//        if (paymentResponsePage.hasContent()) {
-//            return ResponseEntity.status(HttpStatus.OK)
-//                    .body(new ResponseObject("OK", "Successfully", paymentResponsePage.getContent()));
-//        } else {
-//            return ResponseEntity.status(HttpStatus.OK)
-//                    .body(new ResponseObject("Not found", "Not found", ""));
-//        }
-//    }
+    public ResponseEntity<ResponseObject> findByPurchaseOrderId(Integer purchaseOrderId) {
+        List<PaymentResponse> paymentResponselList = new ArrayList<PaymentResponse>();
+        paymentResponselList = paymentResponseRepository.findByPurchaseOrderId(purchaseOrderId);
+        if (!paymentResponselList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", paymentResponselList.stream().map(paymentResponse -> modelMapper.map(paymentResponse, PaymentResponseDTO.class)).toList()));
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
+        }
+    }
 }

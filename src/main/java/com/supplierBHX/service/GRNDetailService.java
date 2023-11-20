@@ -1,9 +1,11 @@
 package com.supplierBHX.service;
 
 import com.supplierBHX.dto.GRNDetailDTO;
+import com.supplierBHX.entity.GRNDetail;
 import com.supplierBHX.entity.RatingFeedback;
 import com.supplierBHX.entity.ResponseObject;
 import com.supplierBHX.repository.GRNDetailRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +20,15 @@ public class GRNDetailService {
     @Autowired
     private GRNDetailRepository grnDetailRepository;
 
-    public ResponseEntity<ResponseObject> findAllGRNDtailDTOByProductId(Integer productId) {
-        List<GRNDetailDTO> grnDetailDTOList = new ArrayList<GRNDetailDTO>();
-        grnDetailDTOList = grnDetailRepository.findAllGRNDtailDTOByProductId(productId);
-        if (!grnDetailDTOList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", grnDetailDTOList));
+    @Autowired
+    private ModelMapper modelMapper;
+
+    public ResponseEntity<ResponseObject> findAllGRNDetailByProductId(Integer productId) {
+        List<GRNDetail> grnDetailList = new ArrayList<GRNDetail>();
+        grnDetailList = grnDetailRepository.findAllGRNDetailByProductId(productId);
+        if (!grnDetailList.isEmpty()) {
+
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", grnDetailList.stream().map(grnDetail -> modelMapper.map(grnDetail, GRNDetailDTO.class)).toList()));
         }
         else {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
