@@ -37,17 +37,19 @@ public class SecurityConfiguration {
                                 "/configuration/security",
                                 "/swagger-ui/**",
                                 "/webjars/**",
-                                "/swagger-ui.html",
-                                "/api/v1/invoice/**"
+                                "/swagger-ui.html"
                         ).permitAll()
                         .requestMatchers("/api/v1/quotation/**").hasAnyRole(ADMIN.name(), MANAGER.name())
                         .requestMatchers("/api/v1/supply-capacity/**").hasAnyRole(ADMIN.name(), MANAGER.name())
                         .requestMatchers("/api/v1/supplier/**").hasAnyRole(ADMIN.name(), MANAGER.name())
+                        .requestMatchers("/api/v1/invoice/**").hasAnyRole(ADMIN.name())
                         .requestMatchers("/api/v1/paymentResponse/**").hasAnyRole(ADMIN.name())
                         .requestMatchers("/api/v1/paymentResponseDetail/**").hasAnyRole(ADMIN.name())
                         .requestMatchers("/api/v1/ratingProduct/**").hasAnyRole(ADMIN.name())
                         .requestMatchers("/api/v1/ratingImage/**").hasAnyRole(ADMIN.name())
                         .requestMatchers("/api/v1/grnDetail/**").hasAnyRole(ADMIN.name())
+                        .requestMatchers("/api/v1/quotation/**").hasAnyRole(ADMIN.name())
+                        .requestMatchers("/api/v1/order/**").hasAnyRole(ADMIN.name())
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -19,7 +19,6 @@ public class RatingProduct {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Integer productId;
     private Float quantityScore;
     private Float qualityScore;
     private Double price;
@@ -27,6 +26,10 @@ public class RatingProduct {
     private Boolean cooperativeState;
     private Float ratingScore;
     private String note;
+
+    @OneToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
 
     @ManyToOne
     @JoinColumn(name = "supplier_id")

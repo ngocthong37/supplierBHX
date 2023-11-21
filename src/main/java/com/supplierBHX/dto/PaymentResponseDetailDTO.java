@@ -1,6 +1,7 @@
 package com.supplierBHX.dto;
 
 import com.supplierBHX.entity.PaymentResponse;
+import com.supplierBHX.entity.Product;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,7 @@ import lombok.Setter;
 public class PaymentResponseDetailDTO {
 
     private Integer id;
-    private Integer productId;
+    private Product product;
     private Double priceOfInvoice;
     private Double adjustedPrice;
     private Double quantityOfInvoice;
