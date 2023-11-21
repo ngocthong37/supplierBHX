@@ -53,6 +53,20 @@ public class RatingProductService {
         }
     }
 
+    public ResponseEntity<ResponseObject> findByProductNameAndDateRange(
+            String productName, LocalDate startDate, LocalDate endDate, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("ratingDate").descending());
+        Page<RatingProduct> ratingProductPage = ratingProductRepository
+                .findByProduct_NameContainingIgnoreCaseAndRatingDateBetweenOrderByRatingDate(
+                        productName, startDate, endDate, pageable);
+
+        if (ratingProductPage.hasContent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", ratingProductPage.getContent().stream().map(ratingProduct -> modelMapper.map(ratingProduct, RatingProductDTO.class)).toList()));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseObject("Not found", "Not found", ""));
+        }
+    }
+
     public ResponseEntity<ResponseObject> findById(Integer id) {
         Optional<RatingProduct> ratingProduct = ratingProductRepository.findById(id);
         if (ratingProduct.isPresent()) {

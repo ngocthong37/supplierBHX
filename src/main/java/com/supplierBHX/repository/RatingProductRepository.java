@@ -9,4 +9,7 @@ import java.time.LocalDate;
 
 public interface RatingProductRepository extends JpaRepository<RatingProduct, Integer> {
     Page<RatingProduct> findByRatingDateBetweenOrderByRatingDate(LocalDate startDate, LocalDate endDate, Pageable pageable);
+
+    Page<RatingProduct> findByProduct_NameContainingIgnoreCaseAndRatingDateBetweenOrderByRatingDate(
+            String productName, LocalDate startDate, LocalDate endDate, Pageable pageable);
 }
