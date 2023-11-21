@@ -62,7 +62,6 @@ public class InvoiceService {
 
     private Map<String, Object> convertFilters(Map<String, Object> filters) {
         Map<String, Object> convertedFilters = new HashMap<>();
-
         if (filters.containsKey("search")) {
             String invoiceNumber = (String) filters.get("search");
             convertedFilters.put("search", invoiceNumber);

@@ -30,7 +30,7 @@ public class SupplyCapacity {
     private LocalDate beginDate;
     private LocalDate endDate;
     @Enumerated(EnumType.STRING)
-    private StatusType statusType;
+    private StatusType status;
     private LocalDate dateConfirmed;
     private Timestamp createdAt;
     private Timestamp updatedAt;

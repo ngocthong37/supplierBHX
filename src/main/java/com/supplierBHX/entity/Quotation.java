@@ -31,7 +31,7 @@ public class Quotation {
     private UnitType unitType;
     private String description;
     @Enumerated(EnumType.STRING)
-    private StatusType quotationStatusType;
+    private StatusType status;
     private LocalDate dateConfirmed;
     private Integer employeeId;
     private Timestamp createdAt;

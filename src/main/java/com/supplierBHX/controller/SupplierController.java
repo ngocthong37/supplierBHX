@@ -3,15 +3,18 @@ package com.supplierBHX.controller;
 import com.supplierBHX.entity.ResponseObject;
 import com.supplierBHX.service.SupplierService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/api/v1/")
 public class SupplierController {
     @Autowired
     SupplierService supplierService;
-
 
     @GetMapping("quotation/findAll")
     ResponseEntity<ResponseObject> findAllQuotation() {
@@ -54,5 +57,14 @@ public class SupplierController {
         return supplierService.updateSupplyCapacityStatus(json);
     }
 
+    @GetMapping("quotation/filter")
+    public ResponseEntity<ResponseObject> getFilteredInvoices(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) Map<String, Object> filters
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return supplierService.getFilteredQuotations(pageable, filters);
+    }
 
 }

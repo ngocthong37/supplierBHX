@@ -2,14 +2,18 @@ package com.supplierBHX.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.supplierBHX.Enum.PaymentStatus;
 import com.supplierBHX.Enum.StatusType;
 import com.supplierBHX.Enum.UnitType;
+import com.supplierBHX.dto.InvoiceDTO;
 import com.supplierBHX.entity.*;
 import com.supplierBHX.repository.QuotationRepository;
 import com.supplierBHX.repository.SupplyCapacityRepository;
 import com.supplierBHX.repository.WarehouseDeliveryRepository;
 import com.supplierBHX.repository.ZoneDeliveryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -89,7 +93,7 @@ public class SupplierService {
             quotation.setCreatedAt(timeNow);
             Timestamp updateAt = Timestamp.valueOf(now);
             quotation.setUpdatedAt(updateAt);
-            quotation.setQuotationStatusType(StatusType.valueOf("Processing"));
+            quotation.setStatus(StatusType.valueOf("PROCESSING"));
 
             List<ZoneDelivery> zoneDeliveries = new ArrayList<>();
             if (zoneDeliveryList.isArray()) {
@@ -139,19 +143,8 @@ public class SupplierService {
                 quotation.setEmployeeId(employeeId);
                 LocalDateTime now = LocalDateTime.now();
                 quotation.setDateConfirmed(LocalDate.from(now));
-                quotation.setQuotationStatusType(StatusType.valueOf(status));
+                quotation.setStatus(StatusType.valueOf(status));
                 Quotation saveQuotation = quotationRepository.save(quotation);
-                // After employee approved, supplyCapacity is created in DB
-                if (status.equals("Processing")) {
-                    SupplyCapacity supplyCapacity = new SupplyCapacity();
-                    supplyCapacity.setProductId(quotation.getProductId());
-                    supplyCapacity.setNumber(quotation.getNumber());
-                    supplyCapacity.setBeginDate(quotation.getBeginDate());
-                    supplyCapacity.setEndDate(quotation.getEndDate());
-                    supplyCapacity.setUnitType(quotation.getUnitType());
-                    supplyCapacity.setSupplier(quotation.getSupplier());
-                    supplyCapacityRepository.save(supplyCapacity);
-                }
                 if (saveQuotation.getId() != null) {
                     return ResponseEntity.status(HttpStatus.OK)
                             .body(new ResponseObject("OK", "Successfully", ""));
@@ -159,7 +152,6 @@ public class SupplierService {
             }
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseObject("ERROR", "Can not update a quotation", ""));
-
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseObject("ERROR", "An error occurred", e.getMessage()));
@@ -214,7 +206,7 @@ public class SupplierService {
             supplyCapacity.setCreatedAt(timeNow);
             Timestamp updateAt = Timestamp.valueOf(now);
             supplyCapacity.setUpdatedAt(updateAt);
-            supplyCapacity.setStatusType(StatusType.valueOf("Processing"));
+            supplyCapacity.setStatus(StatusType.valueOf("PROCESSING"));
 
             List<WarehouseDelivery> warehouseDeliveries = new ArrayList<>();
             if (warehouseDeliveryList.isArray()) {
@@ -262,6 +254,24 @@ public class SupplierService {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
         }
     }
+
+    public ResponseEntity<ResponseObject> getFilteredQuotations(Pageable pageable, Map<String, Object> filters) {
+        Page<Quotation> quotationPage;
+        if (filters != null && !filters.isEmpty()) {
+            Map<String, Object> convertedFilters = convertFilters(filters)  ;
+            quotationPage = quotationRepository.findByFilters(
+                    (List<StatusType>) convertedFilters.get("statusList"),
+                    (LocalDate) convertedFilters.get("from"),
+                    (LocalDate) convertedFilters.get("to"),
+                    pageable);
+        } else {
+            quotationPage = quotationRepository.findAll(pageable);
+        }
+        return quotationPage.hasContent() ?
+                ResponseEntity.ok(new ResponseObject("OK", "Successfully", quotationPage.getContent())):
+                ResponseEntity.ok(new ResponseObject("Not found", "Not found", ""));
+    }
+
 
     public ResponseEntity<ResponseObject> findQuotationById(Integer id) {
         Optional<Quotation> quotation = quotationRepository.findById(id);
@@ -317,7 +327,7 @@ public class SupplierService {
                 supplyCapacity.setEmployeeId(employeeId);
                 LocalDateTime now = LocalDateTime.now();
                 supplyCapacity.setDateConfirmed(LocalDate.from(now));
-                supplyCapacity.setStatusType(StatusType.valueOf(status));
+                supplyCapacity.setStatus(StatusType.valueOf(status));
                 var saveSupplyCapacity = supplyCapacityRepository.save(supplyCapacity);
                 if (saveSupplyCapacity.getId() != null) {
                     return ResponseEntity.status(HttpStatus.OK)
@@ -331,5 +341,48 @@ public class SupplierService {
                     .body(new ResponseObject("ERROR", "An error occurred", e.getMessage()));
         }
     }
+
+    private Map<String, Object> convertFilters(Map<String, Object> filters) {
+        Map<String, Object> convertedFilters = new HashMap<>();
+
+        if (filters.containsKey("search")) {
+            String productName = (String) filters.get("search");
+            convertedFilters.put("search", productName);
+        }
+
+        if (filters.containsKey("status")) {
+            String statusStrings = (String) filters.get("status");
+            String[] statusArray = statusStrings.split(",");
+            List<StatusType> statusList = convertToStatusList(statusArray);
+            convertedFilters.put("statusList", statusList);
+        }
+
+        if (filters.containsKey("from")) {
+            String dateFromString = (String) filters.get("from");
+            LocalDate dateFrom = LocalDate.parse(dateFromString, DateTimeFormatter.ISO_DATE);
+            convertedFilters.put("from", dateFrom);
+        }
+
+        if (filters.containsKey("to")) {
+            String dateToString = (String) filters.get("to");
+            LocalDate dateTo = LocalDate.parse(dateToString, DateTimeFormatter.ISO_DATE);
+            convertedFilters.put("to", dateTo);
+        }
+        return convertedFilters;
+    }
+
+    public List<StatusType> convertToStatusList(String[] statusStrings) {
+        List<StatusType> statusList = new ArrayList<>();
+
+        for (String statusString : statusStrings) {
+            try {
+                statusList.add(StatusType.valueOf(statusString.toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid Status value: " + statusString);
+            }
+        }
+        return statusList;
+    }
+
 
 }
