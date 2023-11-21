@@ -1,5 +1,7 @@
 package com.supplierBHX.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.supplierBHX.Enum.StatusType;
 import com.supplierBHX.Enum.UnitType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,7 +11,7 @@ import lombok.Setter;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.Date;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,26 +24,30 @@ public class Quotation {
     private Integer id;
     private Integer productId;
     private Double number;
-    private Double mass;
+    private Double price;
     private LocalDate beginDate;
     private LocalDate endDate;
     @Enumerated(EnumType.STRING)
     private UnitType unitType;
     private String description;
-    private String zoneDelivery;
-    private Integer status;
+    @Enumerated(EnumType.STRING)
+    private StatusType quotationStatusType;
     private LocalDate dateConfirmed;
     private Integer employeeId;
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;
 
-
+    @JsonIgnore
+    @OneToMany(mappedBy = "quotation",  cascade = CascadeType.ALL)
+    private List<ZoneDelivery> zoneDeliveryList;
 }

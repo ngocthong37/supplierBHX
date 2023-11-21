@@ -18,18 +18,28 @@ public class SupplierController {
         return supplierService.findAllQuotation();
     }
 
+    @GetMapping("quotation/findById/{id}")
+    ResponseEntity<ResponseObject> findQuotationById(@PathVariable Integer id) {
+        return supplierService.findQuotationById(id);
+    }
+
+    @GetMapping("supply-capacity/findById/{id}")
+    ResponseEntity<ResponseObject> findSupplyCapacityById(@PathVariable Integer id) {
+        return supplierService.findSupplyCapacityById(id);
+    }
+
     @GetMapping("supply-capacity/findAll")
     ResponseEntity<ResponseObject> findAllSupplyCapacity() {
         return supplierService.findAllSupplyCapacity();
     }
 
 
-    @PostMapping("create-quotation")
+    @PostMapping("quotation/create")
     ResponseEntity<Object> createQuotation(@RequestBody String json) {
         return supplierService.createQuotation(json);
     }
 
-    @PostMapping("create-request-change")
+    @PostMapping("supply-capacity/create")
     ResponseEntity<Object> createRequestChangeSupplyCapacity(@RequestBody String json) {
         return supplierService.createRequestChangeSupplyCapacity(json);
     }

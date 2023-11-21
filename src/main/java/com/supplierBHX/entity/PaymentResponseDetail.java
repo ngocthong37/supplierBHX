@@ -1,6 +1,5 @@
 package com.supplierBHX.entity;
 
-import com.supplierBHX.Enum.NotificationType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,18 +11,20 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class Notification {
+public class PaymentResponseDetail {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String title;
-    private String message;
-    private Integer BHX;
-    @Enumerated(EnumType.STRING)
-    private NotificationType notificationType;
+    private Integer productId;
+    private Double priceOfInvoice;
+    private Double adjustedPrice;
+    private Double quantityOfInvoice;
+    private Double adjustedQuantity;
 
     @ManyToOne
-    @JoinColumn(name = "account_id")
-    private Account account;
+    @JoinColumn(name = "paymentResponse_id")
+    private PaymentResponse paymentResponse;
+
 
 }

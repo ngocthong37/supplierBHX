@@ -1,6 +1,5 @@
 package com.supplierBHX.entity;
 
-import com.supplierBHX.Enum.NotificationType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,18 +11,17 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class Notification {
+
+public class ZoneDelivery {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String title;
-    private String message;
-    private Integer BHX;
-    @Enumerated(EnumType.STRING)
-    private NotificationType notificationType;
 
     @ManyToOne
-    @JoinColumn(name = "account_id")
-    private Account account;
+    @JoinColumn(name = "quotation_id")
+    private Quotation quotation;
+
+    private String address;
+
 
 }

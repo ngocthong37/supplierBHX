@@ -1,23 +1,18 @@
-package com.supplierBHX.entity;
+package com.supplierBHX.dto;
 
-import jakarta.persistence.*;
+import com.supplierBHX.entity.Supplier;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@Entity
-public class RatingProduct {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class RatingProductDTO {
     private Integer id;
     private Integer productId;
     private Float quantityScore;
@@ -27,9 +22,5 @@ public class RatingProduct {
     private Boolean cooperativeState;
     private Float ratingScore;
     private String note;
-
-    @ManyToOne
-    @JoinColumn(name = "supplier_id")
-    private Supplier supplier;
-
+    private Integer supplierId;
 }

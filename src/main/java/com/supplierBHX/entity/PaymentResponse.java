@@ -1,6 +1,7 @@
 package com.supplierBHX.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.supplierBHX.Enum.ResponseStatus;
+import com.supplierBHX.Enum.PaymentResponseType;
 import com.supplierBHX.Enum.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -15,26 +16,27 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Entity
-public class Invoice {
+public class PaymentResponse {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Enumerated(EnumType.STRING)
+    private PaymentResponseType paymentResponseType;
+    @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
-    @Temporal(TemporalType.DATE)
-    private LocalDate paymentDate;
-    private String image;
-    private Integer invoiceNumber;
+    @Enumerated(EnumType.STRING)
+    private ResponseStatus paymentResponseStatus;
+    private LocalDate updateDate;
+    private String note;
+    private Integer updater;
 
-//    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "purchaseOrder_id")
     private PurchaseOrder purchaseOrder;
 
-//    @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "supplier_id")
-    private Supplier supplier;
+    @JoinColumn(name = "account_id")
+    private Account account;
 
 
 }

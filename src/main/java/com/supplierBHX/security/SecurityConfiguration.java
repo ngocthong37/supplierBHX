@@ -11,11 +11,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static com.supplierBHX.Enum.Permission.ADMIN_READ;
-import static com.supplierBHX.Enum.Permission.MANAGER_READ;
 import static com.supplierBHX.Enum.Role.ADMIN;
 import static com.supplierBHX.Enum.Role.MANAGER;
-import static org.springframework.http.HttpMethod.*;
 
 @Configuration
 @EnableWebSecurity
@@ -40,10 +37,17 @@ public class SecurityConfiguration {
                                 "/configuration/security",
                                 "/swagger-ui/**",
                                 "/webjars/**",
-                                "/swagger-ui.html"
+                                "/swagger-ui.html",
+                                "/api/v1/invoice/**"
                         ).permitAll()
                         .requestMatchers("/api/v1/supplier/**").hasAnyRole(ADMIN.name(), MANAGER.name())
-                        .requestMatchers("/api/v1/invoice/**").hasAnyRole(ADMIN.name())
+//                        .requestMatchers("/api/v1/invoice/**").hasAnyRole(ADMIN.name())
+                        .requestMatchers("/api/v1/paymentResponse/**").hasAnyRole(ADMIN.name())
+                        .requestMatchers("/api/v1/paymentResponseDetail/**").hasAnyRole(ADMIN.name())
+                        .requestMatchers("/api/v1/ratingProduct/**").hasAnyRole(ADMIN.name())
+                        .requestMatchers("/api/v1/ratingImage/**").hasAnyRole(ADMIN.name())
+                        .requestMatchers("/api/v1/grnDetail/**").hasAnyRole(ADMIN.name())
+                        .requestMatchers("/api/v1/quotation/**").hasAnyRole(ADMIN.name())
                         .requestMatchers("/api/v1/order/**").hasAnyRole(ADMIN.name())
                         .anyRequest().authenticated()
                 )
