@@ -272,6 +272,23 @@ public class SupplierService {
                 ResponseEntity.ok(new ResponseObject("Not found", "Not found", ""));
     }
 
+    public ResponseEntity<ResponseObject> getFilteredSupplyCapacity(Pageable pageable, Map<String, Object> filters) {
+        Page<SupplyCapacity> supplyCapacityPage;
+        if (filters != null && !filters.isEmpty()) {
+            Map<String, Object> convertedFilters = convertFilters(filters);
+            supplyCapacityPage = supplyCapacityRepository.findByFilters(
+                    (List<StatusType>) convertedFilters.get("statusList"),
+                    (LocalDate) convertedFilters.get("from"),
+                    (LocalDate) convertedFilters.get("to"),
+                    pageable);
+        } else {
+            supplyCapacityPage = supplyCapacityRepository.findAll(pageable);
+        }
+        return supplyCapacityPage.hasContent() ?
+                ResponseEntity.ok(new ResponseObject("OK", "Successfully", supplyCapacityPage.getContent())):
+                ResponseEntity.ok(new ResponseObject("Not found", "Not found", ""));
+    }
+
 
     public ResponseEntity<ResponseObject> findQuotationById(Integer id) {
         Optional<Quotation> quotation = quotationRepository.findById(id);
@@ -344,11 +361,6 @@ public class SupplierService {
 
     private Map<String, Object> convertFilters(Map<String, Object> filters) {
         Map<String, Object> convertedFilters = new HashMap<>();
-
-        if (filters.containsKey("search")) {
-            String productName = (String) filters.get("search");
-            convertedFilters.put("search", productName);
-        }
 
         if (filters.containsKey("status")) {
             String statusStrings = (String) filters.get("status");

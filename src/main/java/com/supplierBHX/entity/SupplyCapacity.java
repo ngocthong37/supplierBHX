@@ -1,6 +1,7 @@
 package com.supplierBHX.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.supplierBHX.Enum.StatusType;
 import com.supplierBHX.Enum.UnitType;
@@ -41,6 +42,7 @@ public class SupplyCapacity {
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 
+    @JsonBackReference
     @OneToMany(mappedBy = "supplyCapacity", cascade = CascadeType.ALL)
     private List<WarehouseDelivery> warehouseDeliveries;
 
