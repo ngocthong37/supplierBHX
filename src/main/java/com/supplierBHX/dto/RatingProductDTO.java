@@ -1,5 +1,6 @@
 package com.supplierBHX.dto;
 
+import com.supplierBHX.entity.Product;
 import com.supplierBHX.entity.Supplier;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +15,7 @@ import java.time.LocalDate;
 @Setter
 public class RatingProductDTO {
     private Integer id;
-    private Integer productId;
+    private Product product;
     private Float quantityScore;
     private Float qualityScore;
     private Double price;
