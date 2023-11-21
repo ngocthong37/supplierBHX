@@ -1,10 +1,12 @@
 package com.supplierBHX.entity;
 
+import com.supplierBHX.Enum.UnitType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.jpa.repository.EntityGraph;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,14 +19,17 @@ public class PurchaseOrderDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private Integer productId;
-    private Double price;
+    private String productName;
+    private Double unitPrice;
     private Double VAT;
     private Double discount;
-    private Double number;
+    private Double quantity;
     private Double mass;
-    private Integer unit;
-    private Double newNumber;
+    @Enumerated(EnumType.STRING)
+    private UnitType unitType;
+    private Double newQuantity;
     private Double newMass;
+    private Double finalAmount;
 
     @ManyToOne
     @JoinColumn(name = "purchaser_order_id")

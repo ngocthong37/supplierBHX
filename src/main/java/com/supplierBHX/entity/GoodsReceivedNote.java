@@ -24,8 +24,8 @@ public class GoodsReceivedNote {
     private String ratingDelivery;
     private Integer employeeId;
 
-    @OneToMany(mappedBy = "goodsReceivedNote", cascade = CascadeType.ALL)
-    private List<PurchaseOrder> purchaseOrders;
+//    @OneToMany(mappedBy = "goodsReceivedNote", cascade = CascadeType.ALL)
+//    private List<PurchaseOrder> purchaseOrders;
 
     @OneToMany(mappedBy = "goodsReceivedNote", cascade = CascadeType.ALL)
     private List<GRNDetail> grnDetails;

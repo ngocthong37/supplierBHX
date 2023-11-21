@@ -1,11 +1,13 @@
 package com.supplierBHX.entity;
 
 import com.supplierBHX.Enum.UnitType;
+import com.supplierBHX.Enum.UtilConstString;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.jpa.repository.EntityGraph;
 
 import java.util.Date;
 import java.util.List;
@@ -24,10 +26,15 @@ public class PurchaseOrder {
     private Date receiveDate;
     private Date createdAt;
     private Double discount;
-    private Enum<UnitType> unitType;
-    private Integer confirmStatus;
+    private Double VAT;
+
+    @Enumerated(EnumType.STRING)
+    private UtilConstString.ConfirmedStatus confirmStatus;
     private Date confirmDate;
-    private Date deliveryStatus;
+
+    @Enumerated(EnumType.STRING)
+    private UtilConstString.DeliveryStatus deliveryStatus;
+
     private Date newDeliveryDate;
     private Date newReceiveDate;
     private Date updatedAt;
@@ -38,17 +45,9 @@ public class PurchaseOrder {
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 
-    @ManyToOne
-    @JoinColumn(name = "grn_id")
-    private GoodsReceivedNote goodsReceivedNote;
-
     @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL)
     private List<PurchaseOrderDetail> purchaseOrderDetails;
 
     @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL)
     private List<ProblemDetail> problemDetails;
-
-
-
-
 }
