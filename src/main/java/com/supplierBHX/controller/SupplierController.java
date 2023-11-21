@@ -53,6 +53,4 @@ public class SupplierController {
     ResponseEntity<Object> updateStatusSupplyCapacity(@RequestBody String json) {
         return supplierService.updateSupplyCapacityStatus(json);
     }
-
-
 }
