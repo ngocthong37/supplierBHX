@@ -30,7 +30,7 @@ public class PaymentResponse {
     private String note;
     private Integer updater;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "purchaseOrder_id")
     private PurchaseOrder purchaseOrder;
 
