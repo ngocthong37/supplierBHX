@@ -17,12 +17,15 @@ import java.util.List;
 
 public interface SupplyCapacityRepository extends JpaRepository<SupplyCapacity, Integer> {
     @Query("SELECT s FROM SupplyCapacity s WHERE " +
-            "(:status IS NULL OR s.status IN :status) AND " +
-            "(CAST(:from AS date) IS NULL OR CAST(s.createdAt AS date) >= :from) AND " +
-            "(CAST(:to AS date) IS NULL OR CAST(s.createdAt AS date) <= :to)")
+            "((:search IS NULL) OR (CAST(s.product.name AS string) LIKE %:search%)) " +
+            "AND (:status IS NULL OR s.status IN :status) " +
+            "AND (CAST(:from AS date) IS NULL OR CAST(s.createdAt AS date) >= :from) " +
+            "AND (CAST(:to AS date) IS NULL OR CAST(s.createdAt AS date) <= :to)")
+
     Page<SupplyCapacity> findByFilters(
             @Param("status") List<StatusType> statusList,
             @Param("from") LocalDate from,
-            @Param(("to")) LocalDate to,
+            @Param("to") LocalDate to,
+            @Param("search") String search,
             Pageable pageable);
 }

@@ -1,5 +1,6 @@
 package com.supplierBHX.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.supplierBHX.Enum.StatusType;
 import com.supplierBHX.Enum.UnitType;
@@ -37,12 +38,12 @@ public class Quotation {
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
-    @JsonIgnore
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 
-    @JsonIgnore
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;

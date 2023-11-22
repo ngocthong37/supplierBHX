@@ -1,8 +1,8 @@
 package com.supplierBHX.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.supplierBHX.Enum.StatusType;
 import com.supplierBHX.Enum.UnitType;
 import jakarta.persistence.*;
@@ -24,7 +24,6 @@ public class SupplyCapacity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Integer productId;
     private Double number;
     @Enumerated(EnumType.STRING)
     private UnitType unitType;
@@ -37,19 +36,22 @@ public class SupplyCapacity {
     private Timestamp updatedAt;
     private Integer employeeId;
 
-    @JsonIgnore
+    //@JsonBackReference
     @ManyToOne
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 
-    @JsonBackReference
-    @OneToMany(mappedBy = "supplyCapacity", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToMany(mappedBy = "supplyCapacity")
     private List<WarehouseDelivery> warehouseDeliveries;
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;
 
+    @JsonManagedReference
+    @OneToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
 
 }

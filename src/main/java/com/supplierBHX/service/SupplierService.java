@@ -6,11 +6,14 @@ import com.supplierBHX.Enum.PaymentStatus;
 import com.supplierBHX.Enum.StatusType;
 import com.supplierBHX.Enum.UnitType;
 import com.supplierBHX.dto.InvoiceDTO;
+import com.supplierBHX.dto.QuotationDTO;
+import com.supplierBHX.dto.SupplyCapacityDTO;
 import com.supplierBHX.entity.*;
 import com.supplierBHX.repository.QuotationRepository;
 import com.supplierBHX.repository.SupplyCapacityRepository;
 import com.supplierBHX.repository.WarehouseDeliveryRepository;
 import com.supplierBHX.repository.ZoneDeliveryRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +40,9 @@ public class SupplierService {
 
     @Autowired
     private WarehouseDeliveryRepository warehouseDeliveryRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
 
     public ResponseEntity<Object> createQuotation(String json) {
@@ -185,7 +191,11 @@ public class SupplierService {
             JsonNode warehouseDeliveryList = jsonObjectRequest.get("warehouseDeliveryList");
 
             SupplyCapacity supplyCapacity = new SupplyCapacity();
-            supplyCapacity.setProductId(productId);
+
+            Product product = new Product();
+            product.setId(productId);
+
+            supplyCapacity.setProduct(product);
 
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate beginParsedDate = LocalDate.parse(beginDate, dateFormatter);
@@ -222,7 +232,7 @@ public class SupplierService {
                 }
             }
             SupplyCapacity saveSupplyCapacity = supplyCapacityRepository.save(supplyCapacity);
-            for (WarehouseDelivery warehouseDelivery: warehouseDeliveries) {
+            for (WarehouseDelivery warehouseDelivery : warehouseDeliveries) {
                 warehouseDelivery.setSupplyCapacity(supplyCapacity);
                 warehouseDeliveryRepository.save(warehouseDelivery);
             }
@@ -242,14 +252,17 @@ public class SupplierService {
 
 
     public ResponseEntity<ResponseObject> findAllQuotation() {
-        List<Quotation> supplierList = null;
+        List<QuotationDTO> supplierListDTO = null;
         try {
-            supplierList = quotationRepository.findAll();
+            supplierListDTO = quotationRepository.findAll().stream().map(quotation -> modelMapper.map(
+                    quotation,
+                    QuotationDTO.class
+            )).toList();
         } catch (Exception e) {
             System.out.println("error: " + e);
         }
-        if (supplierList.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", supplierList));
+        if (supplierListDTO.size() > 0) {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", supplierListDTO));
         } else {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
         }
@@ -258,7 +271,7 @@ public class SupplierService {
     public ResponseEntity<ResponseObject> getFilteredQuotations(Pageable pageable, Map<String, Object> filters) {
         Page<Quotation> quotationPage;
         if (filters != null && !filters.isEmpty()) {
-            Map<String, Object> convertedFilters = convertFilters(filters)  ;
+            Map<String, Object> convertedFilters = convertFilters(filters);
             quotationPage = quotationRepository.findByFilters(
                     (List<StatusType>) convertedFilters.get("statusList"),
                     (LocalDate) convertedFilters.get("from"),
@@ -268,7 +281,11 @@ public class SupplierService {
             quotationPage = quotationRepository.findAll(pageable);
         }
         return quotationPage.hasContent() ?
-                ResponseEntity.ok(new ResponseObject("OK", "Successfully", quotationPage.getContent())):
+                ResponseEntity.ok(new ResponseObject("OK", "Successfully", quotationPage.getContent().stream().map(
+                        quotation -> modelMapper.map(
+                                quotation, QuotationDTO.class
+                        )
+                ))) :
                 ResponseEntity.ok(new ResponseObject("Not found", "Not found", ""));
     }
 
@@ -280,18 +297,24 @@ public class SupplierService {
                     (List<StatusType>) convertedFilters.get("statusList"),
                     (LocalDate) convertedFilters.get("from"),
                     (LocalDate) convertedFilters.get("to"),
+                    (String) convertedFilters.get("search"),
                     pageable);
         } else {
             supplyCapacityPage = supplyCapacityRepository.findAll(pageable);
         }
         return supplyCapacityPage.hasContent() ?
-                ResponseEntity.ok(new ResponseObject("OK", "Successfully", supplyCapacityPage.getContent())):
+                ResponseEntity.ok(new ResponseObject("OK", "Successfully", supplyCapacityPage.getContent().stream().map(
+                        supplyCapacity -> modelMapper.map(
+                                supplyCapacity, SupplyCapacityDTO.class
+                        )
+                ).toList())) :
                 ResponseEntity.ok(new ResponseObject("Not found", "Not found", ""));
     }
 
 
     public ResponseEntity<ResponseObject> findQuotationById(Integer id) {
-        Optional<Quotation> quotation = quotationRepository.findById(id);
+        Optional<QuotationDTO> quotation = quotationRepository.findById(id)
+                .map(quotation1 -> modelMapper.map(quotation1, QuotationDTO.class));
         if (!quotation.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", quotation));
         } else {
@@ -307,17 +330,20 @@ public class SupplierService {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
         }
     }
+
     public ResponseEntity<ResponseObject> findAllSupplyCapacity() {
-        Map<String, Object> results = new TreeMap<String, Object>();
-        List<SupplyCapacity> supplyCapacityList = null;
+        List<SupplyCapacityDTO> supplyCapacityListDTO = null;
         try {
-            supplyCapacityList = supplyCapacityRepository.findAll();
+            supplyCapacityListDTO = supplyCapacityRepository.findAll().stream().map(
+                    supplyCapacity -> modelMapper.map(
+                            supplyCapacity, SupplyCapacityDTO.class
+                    )
+            ).toList();
         } catch (Exception e) {
             System.out.println("error: " + e);
         }
-        results.put("data", supplyCapacityList);
-        if (!results.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", results));
+        if (!supplyCapacityListDTO.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", supplyCapacityListDTO));
         } else {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
         }
@@ -361,6 +387,11 @@ public class SupplierService {
 
     private Map<String, Object> convertFilters(Map<String, Object> filters) {
         Map<String, Object> convertedFilters = new HashMap<>();
+
+        if (filters.containsKey("search")) {
+            String productName = (String) filters.get("search");
+            convertedFilters.put("search", productName);
+        }
 
         if (filters.containsKey("status")) {
             String statusStrings = (String) filters.get("status");

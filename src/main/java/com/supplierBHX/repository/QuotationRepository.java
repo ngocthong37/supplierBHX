@@ -1,6 +1,5 @@
 package com.supplierBHX.repository;
 
-import com.supplierBHX.Enum.PaymentStatus;
 import com.supplierBHX.Enum.StatusType;
 import com.supplierBHX.entity.Quotation;
 import org.springframework.data.domain.Page;
@@ -25,8 +24,6 @@ public interface QuotationRepository extends JpaRepository<Quotation, Integer> {
             @Param("from") LocalDate from,
             @Param("to") LocalDate to,
             Pageable pageable)  ;
-
-
 
 }
 

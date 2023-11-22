@@ -1,6 +1,8 @@
 package com.supplierBHX.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.supplierBHX.Enum.ProblemType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -27,11 +29,13 @@ public class Problem {
     private Integer employeeId;
     private Enum<ProblemType> problemType;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 
-    @OneToMany(mappedBy = "problem", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    @OneToMany(mappedBy = "problem")
     private List<ProblemDetail> problemDetails;
 
 
