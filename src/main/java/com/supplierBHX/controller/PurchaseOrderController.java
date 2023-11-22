@@ -1,9 +1,12 @@
 package com.supplierBHX.controller;
 
+import com.supplierBHX.controller.api.IPurchaseOrder;
 import com.supplierBHX.entity.PurchaseOrder;
 import com.supplierBHX.entity.ResponseObject;
 import com.supplierBHX.entity.vm.AddPurchaseOrderVM;
 import com.supplierBHX.service.PurchaseOrderService;
+import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,55 +14,87 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/api/v1/order")
 @RequiredArgsConstructor
-public class PurchaseOrderController {
+public class PurchaseOrderController implements IPurchaseOrder {
 
     public final PurchaseOrderService orderService;
 
-    @GetMapping("/allPurchaseOrders")
+    @Override
     public Page<PurchaseOrder> getAllPurchaseOrdersForSupplier(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") int supplierId) {
+           int page,
+            int size,
+            int supplierId) {
 
         Pageable pageable = PageRequest.of(page, size);
 
         return orderService.findAllBySupplierId(supplierId, pageable);
     }
 
-    @GetMapping("/allPurchaseOrdersForAdmin")
-    public ResponseEntity<List<PurchaseOrder>> getAllPurchaseOrdersForAdmin(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-
-        Pageable pageable = PageRequest.of(page, size);
-        List<PurchaseOrder> purchaseOrderPage = orderService.findAll();
-        return ResponseEntity
-                .status(!purchaseOrderPage.isEmpty() ? HttpStatus.OK : HttpStatus.NOT_FOUND)
-                .body(purchaseOrderPage);
-    }
-
-    @GetMapping("/getOrderDetailByIdAndSupplierId")
+    @Override
     public ResponseEntity<PurchaseOrder> getOrderDetailByIdAndSupplierId(
-            @RequestParam int orderId,
-            @RequestParam int supplierId) {
+            int orderId,
+            int supplierId) {
         PurchaseOrder dto = orderService.findByIdAndSupplier_Id(orderId, supplierId);
         return ResponseEntity
                 .status(dto != null ? HttpStatus.OK : HttpStatus.NOT_FOUND)
                 .body(dto);
     }
 
-    @PostMapping("/createOrderForAdmin")
-    public ResponseEntity<AddPurchaseOrderVM> createPurchaseOrder(@RequestBody AddPurchaseOrderVM purchaseOrderVM) {
+    @Override
+    public ResponseEntity<AddPurchaseOrderVM> createPurchaseOrder(AddPurchaseOrderVM purchaseOrderVM) {
         AddPurchaseOrderVM addPurchaseOrder = orderService.addPurchaseOrder(purchaseOrderVM);
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(addPurchaseOrder != null ? HttpStatus.OK : HttpStatus.NOT_FOUND)
                 .body(addPurchaseOrder);
+    }
+
+    @Override
+    public ResponseEntity<List<PurchaseOrder>> getAllPurchaseOrdersForAdmin(
+           int page,
+           int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        List<PurchaseOrder> purchaseOrderPage = orderService.findAll(pageable);
+        return ResponseEntity
+                .status(!purchaseOrderPage.isEmpty() ? HttpStatus.OK : HttpStatus.NOT_FOUND)
+                .body(purchaseOrderPage);
+    }
+
+    @Override
+    public ResponseEntity<PurchaseOrder> updateConfirmStatusForPurchaseOrder(
+            String username,
+            Integer id,
+            String confirmStatus) {
+        PurchaseOrder updatePurchaseOrder = orderService.UpdatePurchaseOrderConfirmStatus(username, id, confirmStatus);
+        return ResponseEntity
+                .status(updatePurchaseOrder != null ? HttpStatus.OK : HttpStatus.NOT_IMPLEMENTED)
+                .body(updatePurchaseOrder);
+    }
+
+    @Override
+    public ResponseEntity<PurchaseOrder> updatePurchaseOrder(PurchaseOrder purchaseOrder) {
+        PurchaseOrder updatePurchaseOrder = orderService.updatePurchaseOrder(purchaseOrder);
+        return ResponseEntity
+                .status(updatePurchaseOrder != null ? HttpStatus.OK : HttpStatus.NOT_IMPLEMENTED)
+                .body(updatePurchaseOrder);
+    }
+
+    @Override
+    public ResponseEntity<Page<PurchaseOrder>> filterPurchaseOrders(String accountId, List<String> keywords, LocalDate from, LocalDate to, List<String> confirmStatuses, List<String> deliveryStatuses, List<Integer> warehouseIds, List<Integer> employeeIds, List<Integer> supplierIds, String sort, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<PurchaseOrder> filteredPurchaseOrders = orderService.filterPurchaseOrders( accountId,
+                keywords, from, to, confirmStatuses, deliveryStatuses,
+                warehouseIds, employeeIds, supplierIds, sort, pageable
+        );
+        return ResponseEntity
+                .status(filteredPurchaseOrders.stream().findAny().isPresent() ? HttpStatus.OK : HttpStatus.NOT_FOUND)
+                .body(filteredPurchaseOrders);
     }
 }

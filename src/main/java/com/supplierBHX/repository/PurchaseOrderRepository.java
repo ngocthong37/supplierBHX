@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,7 +18,6 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, In
     @EntityGraph(attributePaths = {"purchaseOrderDetails"})
     Optional<PurchaseOrder> findByIdAndSupplier_Id(Integer orderId, Integer supplierId);
 
-//    @EntityGraph(attributePaths = {"warehouseId"})
     Page<PurchaseOrder> findAllBySupplier_Id(Integer supplierId, Pageable pageable);
 
 }

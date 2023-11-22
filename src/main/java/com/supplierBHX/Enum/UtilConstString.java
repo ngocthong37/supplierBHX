@@ -8,10 +8,10 @@ public class UtilConstString {
 
     @Getter
     public enum DeliveryStatus {
-        WAITING("Waiting"),
-        NOT_DELIVERED("Not Delivered yet"),
-        IS_DELIVERING("Is Delivering"),
-        DELIVERED("Delivered");
+        PENDING("PENDING"),
+        IN_PROGRESS("IN_PROGRESS"),
+        DELIVERED("DELIVERED"),
+        CANCELED("CANCELED");
         private final String value;
 
         DeliveryStatus(String value) {
@@ -22,10 +22,10 @@ public class UtilConstString {
 
     @Getter
     public enum ConfirmedStatus {
-        WAITING("Waiting"),
-        PROCESSING("Processing"),
-        APPROVED("Approved"),
-        REJECTED("Rejected");
+        WAITING("WAITING"),
+        PROCESSING("PROCESSING"),
+        APPROVED("APPROVED"),
+        REJECTED("REJECTED");
 
         private final String value;
 

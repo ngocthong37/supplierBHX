@@ -1,5 +1,6 @@
 package com.supplierBHX.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.supplierBHX.Enum.UnitType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,8 +32,8 @@ public class PurchaseOrderDetail {
     private Double newMass;
     private Double finalAmount;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "purchaser_order_id")
     private PurchaseOrder purchaseOrder;
-
 }
