@@ -28,7 +28,7 @@ public class AddPurchaseOrderVM {
     private UtilConstString.ConfirmedStatus confirmStatus = UtilConstString.ConfirmedStatus.WAITING;
 
     @Enumerated(EnumType.STRING)
-    private UtilConstString.DeliveryStatus deliveryStatus = UtilConstString.DeliveryStatus.WAITING;
+    private UtilConstString.DeliveryStatus deliveryStatus = UtilConstString.DeliveryStatus.PENDING;
 
     private Integer warehouseId;
     private Integer employeeId;

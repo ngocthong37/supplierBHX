@@ -1,5 +1,6 @@
 package com.supplierBHX.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -44,4 +45,5 @@ public class Supplier {
 
     @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL)
     private List<RatingProduct> ratingProducts;
+
 }

@@ -1,5 +1,6 @@
 package com.supplierBHX.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,10 +20,9 @@ public class ProblemDetail {
     @JoinColumn(name = "problem_id")
     private Problem problem;
     private String description;
+
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "purchase_order_id")
     private PurchaseOrder purchaseOrder;
-
-
-
 }
