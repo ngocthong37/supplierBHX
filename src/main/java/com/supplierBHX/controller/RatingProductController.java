@@ -29,6 +29,16 @@ public class RatingProductController {
     ) {
         return ratingProductService.findByDateRangeAndSort(startDate, endDate, page, size);
     }
+    @GetMapping("/findByProductNameAndDateRange")
+    public ResponseEntity<ResponseObject> findByProductNameAndDateRange(
+            @RequestParam String productName,
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ratingProductService.findByProductNameAndDateRange(productName, startDate, endDate, page, size);
+    }
     @GetMapping("/findById/{id}")
     ResponseEntity<ResponseObject> findById(@PathVariable Integer id) {
         return ratingProductService.findById(id);

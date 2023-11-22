@@ -16,11 +16,14 @@ public class PaymentResponseDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Integer productId;
     private Double priceOfInvoice;
     private Double adjustedPrice;
     private Double quantityOfInvoice;
     private Double adjustedQuantity;
+
+    @OneToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
 
     @ManyToOne
     @JoinColumn(name = "paymentResponse_id")
