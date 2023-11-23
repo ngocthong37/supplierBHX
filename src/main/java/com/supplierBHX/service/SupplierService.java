@@ -323,9 +323,11 @@ public class SupplierService {
     }
 
     public ResponseEntity<ResponseObject> findSupplyCapacityById(Integer id) {
-        Optional<Quotation> supplyCapacity = quotationRepository.findById(id);
-        if (!supplyCapacity.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", supplyCapacity));
+        Optional<SupplyCapacityDTO> supplyCapacityDTO = supplyCapacityRepository.findById(id).map(
+                supplyCapacity1 -> modelMapper.map(supplyCapacity1, SupplyCapacityDTO.class)
+        );
+        if (!supplyCapacityDTO.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", supplyCapacityDTO));
         } else {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
         }

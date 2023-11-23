@@ -77,5 +77,4 @@ public class SupplierController {
         return supplierService.getFilteredSupplyCapacity(pageable, filters);
     }
 
-
 }
