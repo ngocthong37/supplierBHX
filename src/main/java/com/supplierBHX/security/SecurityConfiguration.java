@@ -10,6 +10,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import static com.supplierBHX.Enum.Role.ADMIN;
 import static com.supplierBHX.Enum.Role.MANAGER;
@@ -37,13 +40,15 @@ public class SecurityConfiguration {
                                 "/configuration/security",
                                 "/swagger-ui/**",
                                 "/webjars/**",
-                                "/swagger-ui.html"
+                                "/swagger-ui.html",
+                                "/api/v1/invoice/**",
+                                "/api/v1/paymentResponse/**"
                         ).permitAll()
                         .requestMatchers("/api/v1/quotation/**").hasAnyRole(ADMIN.name(), MANAGER.name())
                         .requestMatchers("/api/v1/supply-capacity/**").hasAnyRole(ADMIN.name(), MANAGER.name())
                         .requestMatchers("/api/v1/supplier/**").hasAnyRole(ADMIN.name(), MANAGER.name())
-                        .requestMatchers("/api/v1/invoice/**").hasAnyRole(ADMIN.name())
-                        .requestMatchers("/api/v1/paymentResponse/**").hasAnyRole(ADMIN.name())
+//                        .requestMatchers("/api/v1/invoice/**").hasAnyRole(ADMIN.name())
+//                        .requestMatchers("/api/v1/paymentResponse/**").hasAnyRole(ADMIN.name())
                         .requestMatchers("/api/v1/paymentResponseDetail/**").hasAnyRole(ADMIN.name())
                         .requestMatchers("/api/v1/ratingProduct/**").hasAnyRole(ADMIN.name())
                         .requestMatchers("/api/v1/ratingImage/**").hasAnyRole(ADMIN.name())
@@ -56,5 +61,18 @@ public class SecurityConfiguration {
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
+    }
+
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        source.registerCorsConfiguration("/**", config);
+
+        return new CorsFilter(source);
     }
 }
