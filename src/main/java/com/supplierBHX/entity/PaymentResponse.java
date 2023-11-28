@@ -23,16 +23,27 @@ public class PaymentResponse {
     @Enumerated(EnumType.STRING)
     private PaymentResponseType paymentResponseType;
     @Enumerated(EnumType.STRING)
-    private PaymentStatus paymentStatus;
-    @Enumerated(EnumType.STRING)
     private ResponseStatus paymentResponseStatus;
-    private LocalDate updateDate;
-    private String note;
-    private Integer updater;
+    private LocalDate createdAt;
+    private Integer updaterId;
+    private Integer creatorId;
+    private Double priceOfInvoice;
+    private Double quantityOfInvoice;
+    private Double priceOfPurchaseOrder;
+    private Double quantityOfPurchaseOrder;
 
     @ManyToOne
     @JoinColumn(name = "purchaseOrder_id")
     private PurchaseOrder purchaseOrder;
+
+    @ManyToOne
+    @JoinColumn(name = "invoice_id")
+    private Invoice invoice;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
+
 
     @ManyToOne
     @JoinColumn(name = "account_id")
