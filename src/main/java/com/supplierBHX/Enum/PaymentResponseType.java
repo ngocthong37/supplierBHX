@@ -1,9 +1,9 @@
 package com.supplierBHX.Enum;
 
 public enum PaymentResponseType {
-    Payment,
+    PAYMENT,
 
-    Quantity,
+    QUANTITY,
 
-    Quality
+    QUALITY
 }

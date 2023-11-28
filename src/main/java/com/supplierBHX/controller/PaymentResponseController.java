@@ -56,16 +56,16 @@ public class PaymentResponseController {
         }
     }
 
-    @PutMapping("/update/{id}")
-    ResponseEntity<ResponseObject> updateById(@RequestBody @Validated PaymentResponse paymentResponse, BindingResult result,@PathVariable Integer id){
-        if (!result.hasErrors()){
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", paymentResponseService.update(paymentResponse, id)));
-
-        }
-        else {
-            throw new RuntimeException(Objects.requireNonNull(result.getFieldError()).toString());
-        }
-    }
+//    @PutMapping("/update/{id}")
+//    ResponseEntity<ResponseObject> updateById(@RequestBody @Validated PaymentResponse paymentResponse, BindingResult result,@PathVariable Integer id){
+//        if (!result.hasErrors()){
+//            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", paymentResponseService.update(paymentResponse, id)));
+//
+//        }
+//        else {
+//            throw new RuntimeException(Objects.requireNonNull(result.getFieldError()).toString());
+//        }
+//    }
 
 
 }

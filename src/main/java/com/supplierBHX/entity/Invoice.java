@@ -36,5 +36,9 @@ public class Invoice {
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 
+    @ManyToOne
+    @JoinColumn(name = "account_id")
+    private Account account;
+
 
 }

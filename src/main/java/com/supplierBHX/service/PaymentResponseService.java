@@ -50,24 +50,24 @@ public class PaymentResponseService {
 
     }
 
-    public PaymentResponse update(PaymentResponse newPaymentResponse, Integer id) {
-         return paymentResponseRepository
-                .findById(id)
-                .map(
-                        paymentR -> {
-                            paymentR.setPaymentResponseType(newPaymentResponse.getPaymentResponseType());
-                            paymentR.setPaymentResponseStatus(newPaymentResponse.getPaymentResponseStatus());
-                            paymentR.setUpdateDate(newPaymentResponse.getUpdateDate());
-                            paymentR.setNote(newPaymentResponse.getNote());
-                            paymentR.setPurchaseOrder(newPaymentResponse.getPurchaseOrder());
-                            paymentR.setAccount(newPaymentResponse.getAccount());
-                            paymentR.setUpdater(newPaymentResponse.getUpdater());
-                            paymentR.setPaymentStatus(newPaymentResponse.getPaymentStatus());
-                            return paymentResponseRepository.save(paymentR);
-                        })
-                .orElseGet(
-                        () -> paymentResponseRepository.save(newPaymentResponse));
-    }
+//    public PaymentResponse update(PaymentResponse newPaymentResponse, Integer id) {
+//         return paymentResponseRepository
+//                .findById(id)
+//                .map(
+//                        paymentR -> {
+//                            paymentR.setPaymentResponseType(newPaymentResponse.getPaymentResponseType());
+//                            paymentR.setPaymentResponseStatus(newPaymentResponse.getPaymentResponseStatus());
+//                            paymentR.setUpdateDate(newPaymentResponse.getUpdateDate());
+//                            paymentR.setNote(newPaymentResponse.getNote());
+//                            paymentR.setPurchaseOrder(newPaymentResponse.getPurchaseOrder());
+//                            paymentR.setAccount(newPaymentResponse.getAccount());
+//                            paymentR.setUpdater(newPaymentResponse.getUpdater());
+//                            paymentR.setPaymentStatus(newPaymentResponse.getPaymentStatus());
+//                            return paymentResponseRepository.save(paymentR);
+//                        })
+//                .orElseGet(
+//                        () -> paymentResponseRepository.save(newPaymentResponse));
+//    }
 
     public Object insert(PaymentResponse paymentResponse) {
         return paymentResponseRepository.save(paymentResponse);
