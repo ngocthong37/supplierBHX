@@ -67,7 +67,7 @@ public class PaymentResponseService {
 //    }
 
     public Object insert(PaymentResponse paymentResponse) {
-        paymentResponse.setUpdateDate(LocalDate.now());
+        paymentResponse.setCreatedAt(LocalDate.now());
         return paymentResponseRepository.save(paymentResponse);
     }
 
