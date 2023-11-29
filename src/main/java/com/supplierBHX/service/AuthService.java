@@ -84,6 +84,8 @@ public class AuthService {
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
+                .accountId(user.getId())
+                .userName(user.getUsername())
                 .build();
     }
 
