@@ -16,13 +16,16 @@ import java.util.List;
 public interface QuotationRepository extends JpaRepository<Quotation, Integer> {
 
     @Query("SELECT q FROM Quotation q WHERE " +
-            "(:status IS NULL OR q.status IN :status) AND " +
-            "(CAST(:from AS date) IS NULL OR CAST(q.createdAt AS date) >= :from) AND " +
-            "(CAST(:to AS date) IS NULL OR CAST(q.createdAt AS date) <= :to)")
+            "((:search IS NULL) OR (CAST(q.product.name AS string) LIKE %:search%)) " +
+            "AND ((:status IS NULL) OR (q.status IN :status)) " +
+            "AND ((:from IS NULL) OR (CAST(q.createdAt AS date) >= :from)) " +
+            "AND ((:to IS NULL) OR (CAST(q.createdAt AS date) <= :to))")
+
     Page<Quotation> findByFilters(
             @Param("status") List<StatusType> status,
             @Param("from") LocalDate from,
             @Param("to") LocalDate to,
+            @Param("search") String search,
             Pageable pageable)  ;
 
 }

@@ -22,4 +22,8 @@ public class Product {
     @OneToOne(mappedBy = "product")
     private SupplyCapacity supplyCapacity;
 
+    @JsonBackReference
+    @OneToOne(mappedBy = "product")
+    private Quotation quotation;
+
 }

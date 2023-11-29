@@ -2,10 +2,8 @@ package com.supplierBHX.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.supplierBHX.Enum.PaymentStatus;
 import com.supplierBHX.Enum.StatusType;
 import com.supplierBHX.Enum.UnitType;
-import com.supplierBHX.dto.InvoiceDTO;
 import com.supplierBHX.dto.QuotationDTO;
 import com.supplierBHX.dto.SupplyCapacityDTO;
 import com.supplierBHX.entity.*;
@@ -76,7 +74,10 @@ public class SupplierService {
             JsonNode zoneDeliveryList = jsonObjectQuotation.get("zoneDeliveryList");
 
             Quotation quotation = new Quotation();
-            quotation.setProductId(productId);
+
+            Product product = new Product();
+            product.setId(productId);
+            quotation.setProduct(product);
 
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate beginParsedDate = LocalDate.parse(beginDate, dateFormatter);
@@ -276,6 +277,7 @@ public class SupplierService {
                     (List<StatusType>) convertedFilters.get("statusList"),
                     (LocalDate) convertedFilters.get("from"),
                     (LocalDate) convertedFilters.get("to"),
+                    (String) convertedFilters.get("search"),
                     pageable);
         } else {
             quotationPage = quotationRepository.findAll(pageable);
@@ -310,7 +312,6 @@ public class SupplierService {
                 ).toList())) :
                 ResponseEntity.ok(new ResponseObject("Not found", "Not found", ""));
     }
-
 
     public ResponseEntity<ResponseObject> findQuotationById(Integer id) {
         Optional<QuotationDTO> quotation = quotationRepository.findById(id)

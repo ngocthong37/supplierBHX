@@ -16,7 +16,7 @@ public class QuotationDTO {
     private Integer id;
     private Integer accountId;
     private Integer supplierId;
-    private Integer productId;
+    private String productName;
     private Double price;
     private Double number;
     private Integer employeeId;
