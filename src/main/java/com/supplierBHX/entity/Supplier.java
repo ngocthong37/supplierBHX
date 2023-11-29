@@ -25,25 +25,32 @@ public class Supplier {
     private Boolean sex;
     private String email;
 
-    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToMany(mappedBy = "supplier")
     private List<Account> accounts;
 
-    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToMany(mappedBy = "supplier")
     private List<Invoice> invoices;
 
-    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToMany(mappedBy = "supplier")
     private List<Quotation> quotations;
 
-    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToMany(mappedBy = "supplier")
     private List<Problem> problems;
 
-    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToMany(mappedBy = "supplier")
     private List<SupplyCapacity> supplyCapacities;
 
-    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToMany(mappedBy = "supplier")
     private List<PurchaseOrder> purchaseOrders;
 
-    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToMany(mappedBy = "supplier")
     private List<RatingProduct> ratingProducts;
 
 }

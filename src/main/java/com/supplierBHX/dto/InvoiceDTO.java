@@ -26,5 +26,4 @@ public class InvoiceDTO {
     private Integer invoiceNumber;
     private Integer purchaseOrderId;
     private Integer supplierId;
-
 }

@@ -24,5 +24,4 @@ public class GRNDetailDTO {
     private Integer numberDamage;
     private Integer numberMissing;
     private GoodsReceivedNote goodsReceivedNote;
-
 }

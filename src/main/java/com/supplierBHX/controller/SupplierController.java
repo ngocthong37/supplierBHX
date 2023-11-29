@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping(path = "/api/v1/")
 public class SupplierController {
@@ -76,6 +77,5 @@ public class SupplierController {
         Pageable pageable = PageRequest.of(page, size);
         return supplierService.getFilteredSupplyCapacity(pageable, filters);
     }
-
 
 }

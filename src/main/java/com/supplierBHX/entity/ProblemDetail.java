@@ -16,6 +16,8 @@ public class ProblemDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "problem_id")
     private Problem problem;

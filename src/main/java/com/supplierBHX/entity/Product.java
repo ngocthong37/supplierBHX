@@ -1,9 +1,7 @@
 package com.supplierBHX.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,4 +17,13 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
+
+    @JsonBackReference
+    @OneToOne(mappedBy = "product")
+    private SupplyCapacity supplyCapacity;
+
+    @JsonBackReference
+    @OneToOne(mappedBy = "product")
+    private Quotation quotation;
+
 }

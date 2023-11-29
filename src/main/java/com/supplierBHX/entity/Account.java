@@ -1,5 +1,8 @@
 package com.supplierBHX.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.supplierBHX.Enum.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,13 +28,17 @@ public class Account implements UserDetails {
     private Boolean status;
     private String email;
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "account")
     private List<Notification> notifications;
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToMany(mappedBy = "account")
     private List<Quotation> quotations;
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToMany(mappedBy = "account")
     private List<SupplyCapacity> supplyCapacities;
 
 

@@ -1,5 +1,6 @@
 package com.supplierBHX.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.supplierBHX.Enum.NotificationType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,7 @@ public class Notification {
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;

@@ -1,5 +1,6 @@
 package com.supplierBHX.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.supplierBHX.Enum.PaymentStatus;
 import jakarta.persistence.*;
@@ -32,6 +33,7 @@ public class Invoice {
     private PurchaseOrder purchaseOrder;
 
 //    @JsonIgnore
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;

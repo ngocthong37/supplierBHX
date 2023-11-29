@@ -1,6 +1,8 @@
 package com.supplierBHX.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.supplierBHX.Enum.StatusType;
 import com.supplierBHX.Enum.UnitType;
 import jakarta.persistence.*;
@@ -22,7 +24,6 @@ public class Quotation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Integer productId;
     private Double number;
     private Double price;
     private LocalDate beginDate;
@@ -37,15 +38,20 @@ public class Quotation {
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
-    @JsonIgnore
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 
-    @JsonIgnore
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;
+
+    @JsonManagedReference
+    @OneToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
 
     @JsonIgnore
     @OneToMany(mappedBy = "quotation",  cascade = CascadeType.ALL)

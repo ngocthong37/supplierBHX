@@ -24,10 +24,10 @@ public class GoodsReceivedNote {
     private String ratingDelivery;
     private Integer employeeId;
 
-//    @OneToMany(mappedBy = "goodsReceivedNote", cascade = CascadeType.ALL)
+//    @OneToMany(mappedBy = "goodsReceivedNote")
 //    private List<PurchaseOrder> purchaseOrders;
 
-    @OneToMany(mappedBy = "goodsReceivedNote", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "goodsReceivedNote")
     private List<GRNDetail> grnDetails;
 
 
