@@ -28,7 +28,7 @@ public class Invoice {
     private Integer invoiceNumber;
 
 //    @JsonIgnore
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "purchaseOrder_id")
     private PurchaseOrder purchaseOrder;
 
