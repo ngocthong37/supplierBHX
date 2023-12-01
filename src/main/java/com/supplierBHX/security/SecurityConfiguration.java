@@ -44,7 +44,8 @@ public class SecurityConfiguration {
                                 "/swagger-ui.html",
                                 "/api/v1/invoice/**",
                                 "/api/v1/paymentResponse/**",
-                                "/api/v1/paymentResponseDetail/**"
+                                "/api/v1/paymentResponseDetail/**",
+                                "/api/v1/invoiceDetail/**"
                         ).permitAll()
                         .requestMatchers("/api/v1/supply-capacity/**").hasAnyRole(ADMIN.name(), MANAGER.name())
                         .requestMatchers("/api/v1/supplier/**").hasAnyRole(ADMIN.name(), MANAGER.name())

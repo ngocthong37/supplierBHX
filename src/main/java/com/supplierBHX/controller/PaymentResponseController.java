@@ -45,6 +45,10 @@ public class PaymentResponseController {
     ResponseEntity<ResponseObject> findByPurchaseOrderId(@PathVariable Integer purchaseOrderId){
         return paymentResponseService.findByPurchaseOrderId(purchaseOrderId);
     }
+    @GetMapping("/findByInvoiceId/{invoiceId}")
+    ResponseEntity<ResponseObject> findByInvoiceId(@PathVariable Integer invoiceId){
+        return paymentResponseService.findByInvoiceId(invoiceId);
+    }
     @PostMapping("/insert")
     ResponseEntity<ResponseObject> insert(@RequestBody @Validated PaymentResponse paymentResponse, BindingResult result){
         if (!result.hasErrors()){

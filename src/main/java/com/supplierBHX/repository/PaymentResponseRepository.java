@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface PaymentResponseRepository extends JpaRepository<PaymentResponse, Integer> {
     List<PaymentResponse> findByPurchaseOrderId(Integer purchaseOrderId);
+
+    List<PaymentResponse> findByInvoiceId(Integer invoiceId);
 //    @Query("SELECT p FROM PaymentResponse p WHERE " +
 //            "(:#{#filters['property1']} IS NULL OR p.property1 = :#{#filters['property1']}) AND " +
 //            "(:#{#filters['property2']} IS NULL OR p.property2 = :#{#filters['property2']})")

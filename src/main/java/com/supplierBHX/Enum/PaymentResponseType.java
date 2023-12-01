@@ -5,5 +5,5 @@ public enum PaymentResponseType {
 
     QUANTITY,
 
-    QUALITY
+    PRICE
 }
