@@ -56,4 +56,8 @@ public class Quotation {
     @JsonIgnore
     @OneToMany(mappedBy = "quotation",  cascade = CascadeType.ALL)
     private List<ZoneDelivery> zoneDeliveryList;
+
+    @OneToMany(mappedBy = "quotation",  cascade = CascadeType.ALL)
+    private List<ProductImage> productImageList;
+
 }

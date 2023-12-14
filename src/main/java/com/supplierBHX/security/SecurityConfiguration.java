@@ -32,7 +32,7 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 .authorizeRequests(authorize -> authorize
                         .requestMatchers(
-                                "/api/v1/auth/**",
+                                "/api/v1/**",
                                 "/api/v1/quotation/**",
                                 "/v3/api-docs/**",
                                 "/swagger-resources",
@@ -61,7 +61,7 @@ public class SecurityConfiguration {
 //                        .requestMatchers("/api/v1/ratingImage/**").hasAnyRole(ADMIN.name())
                         .requestMatchers("/api/v1/grnDetail/**").hasAnyRole(ADMIN.name())
 //                        .requestMatchers("/api/v1/order/**").hasAnyRole(ADMIN.name())
-                        .anyRequest().authenticated()
+//                        .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)

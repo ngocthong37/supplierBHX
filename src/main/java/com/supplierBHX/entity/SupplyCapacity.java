@@ -35,15 +35,13 @@ public class SupplyCapacity {
     private Timestamp createdAt;
     private Timestamp updatedAt;
     private Integer employeeId;
+    private String warehouseAddress;
 
     //@JsonBackReference
     @ManyToOne
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "supplyCapacity")
-    private List<WarehouseDelivery> warehouseDeliveries;
 
     @ManyToOne
     @JoinColumn(name = "account_id")
