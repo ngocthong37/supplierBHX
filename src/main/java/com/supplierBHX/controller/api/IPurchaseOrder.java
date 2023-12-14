@@ -74,8 +74,6 @@ public interface IPurchaseOrder {
     @PostMapping(value ="/admin/createOrder" , produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<AddPurchaseOrderVM> createPurchaseOrder(@RequestBody AddPurchaseOrderVM purchaseOrderVM);
 
-
-
     @Operation(
             summary = "Get all orders of suppliers",
             description = "Get all orders of suppliers",

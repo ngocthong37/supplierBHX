@@ -45,6 +45,7 @@ public class SecurityConfiguration {
                                 "/api/v1/invoice/**",
                                 "/api/v1/paymentResponse/**",
                                 "/api/v1/paymentResponseDetail/**",
+                                "/api/v1/order/**"
                                 "/api/v1/invoiceDetail/**"
                         ).permitAll()
                         .requestMatchers("/api/v1/supply-capacity/**").hasAnyRole(ADMIN.name(), MANAGER.name())
@@ -55,7 +56,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/v1/ratingProduct/**").hasAnyRole(ADMIN.name())
                         .requestMatchers("/api/v1/ratingImage/**").hasAnyRole(ADMIN.name())
                         .requestMatchers("/api/v1/grnDetail/**").hasAnyRole(ADMIN.name())
-                        .requestMatchers("/api/v1/order/**").hasAnyRole(ADMIN.name())
+//                        .requestMatchers("/api/v1/order/**").hasAnyRole(ADMIN.name())
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -17,6 +17,5 @@ public class AuthenticationResponse {
   private String refreshToken;
   private Integer accountId;
   private String userName;
-
-
+  private Integer supplierId;
 }
