@@ -2,7 +2,9 @@ package com.supplierBHX.service;
 
 import com.supplierBHX.Enum.PaymentStatus;
 import com.supplierBHX.dto.InvoiceDTO;
+import com.supplierBHX.dto.PaymentResponseDTO;
 import com.supplierBHX.entity.Invoice;
+import com.supplierBHX.entity.PaymentResponse;
 import com.supplierBHX.entity.ResponseObject;
 import com.supplierBHX.repository.InvoiceRepository;
 import org.modelmapper.ModelMapper;
@@ -15,10 +17,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class InvoiceService {
@@ -101,5 +101,15 @@ public class InvoiceService {
             }
         }
         return paymentStatusList;
+    }
+
+    public ResponseEntity<ResponseObject> findById(Integer id) {
+        Optional<Invoice> invoice = invoiceRepository.findById(id);
+        if (invoice.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", invoice.stream().map(invoice1 -> modelMapper.map(invoice1, InvoiceDTO.class)).collect(Collectors.toList())));
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
+        }
     }
 }

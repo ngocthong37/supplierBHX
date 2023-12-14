@@ -81,4 +81,15 @@ public class PaymentResponseService {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
         }
     }
+
+    public ResponseEntity<ResponseObject> findByInvoiceId(Integer invoiceId) {
+        List<PaymentResponse> paymentResponselList = new ArrayList<PaymentResponse>();
+        paymentResponselList = paymentResponseRepository.findByInvoiceId(invoiceId);
+        if (!paymentResponselList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", paymentResponselList.stream().map(paymentResponse -> modelMapper.map(paymentResponse, PaymentResponseDTO.class)).toList()));
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
+        }
+    }
 }
