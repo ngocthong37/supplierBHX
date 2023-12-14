@@ -44,7 +44,7 @@ public class StorageService {
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }   
+        }
         return imageUrls;
     }
 }
