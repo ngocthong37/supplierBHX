@@ -6,11 +6,9 @@ import com.supplierBHX.Enum.StatusType;
 import com.supplierBHX.Enum.UnitType;
 import com.supplierBHX.dto.QuotationDTO;
 import com.supplierBHX.dto.SupplyCapacityDTO;
+import com.supplierBHX.dto.ZoneDeliveryDTO;
 import com.supplierBHX.entity.*;
-import com.supplierBHX.repository.QuotationRepository;
-import com.supplierBHX.repository.SupplyCapacityRepository;
-import com.supplierBHX.repository.WarehouseDeliveryRepository;
-import com.supplierBHX.repository.ZoneDeliveryRepository;
+import com.supplierBHX.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,12 +16,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SupplierService {
@@ -37,23 +37,45 @@ public class SupplierService {
     private ZoneDeliveryRepository zoneDeliveryRepository;
 
     @Autowired
-    private WarehouseDeliveryRepository warehouseDeliveryRepository;
+    private ModelMapper modelMapper;
 
     @Autowired
-    private ModelMapper modelMapper;
+    private ProductImageRepository productImageRepository;
+
+    @Autowired
+    EmailService emailService;
+
+    @Autowired
+    private AccountRepository accountRepository;
+
+    @Autowired
+    private StorageService storageService;
+
+
+    public List<String> uploadImage(List<MultipartFile> files, String namePath, Integer quotationId) {
+        List<String> imageUrls;
+
+
+        imageUrls = storageService.uploadImages(files, namePath);
+
+        for (int i = 0; i < imageUrls.size(); i++) {
+            quotationRepository.updateImage(imageUrls.get(i), quotationId);
+        }
+        quotationRepository.updateDefaultImage(imageUrls.get(0), quotationId);
+        return imageUrls;
+    }
 
 
     public ResponseEntity<Object> createQuotation(String json) {
         ObjectMapper objectMapper = new ObjectMapper();
-
         try {
             if (json == null || json.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new ResponseObject("ERROR", "Empty JSON", ""));
             }
             JsonNode jsonObjectQuotation = objectMapper.readTree(json);
-            Integer productId = jsonObjectQuotation.get("productId") != null ?
-                    jsonObjectQuotation.get("productId").asInt() : 1;
+            String productName = jsonObjectQuotation.get("productName") != null ?
+                    jsonObjectQuotation.get("productName").asText() : "";
             Integer supplierId = jsonObjectQuotation.get("supplierId") != null ?
                     jsonObjectQuotation.get("supplierId").asInt() : 1;
             Double number = jsonObjectQuotation.get("number") != null ?
@@ -72,13 +94,9 @@ public class SupplierService {
                     jsonObjectQuotation.get("price").asDouble() : -1;
 
             JsonNode zoneDeliveryList = jsonObjectQuotation.get("zoneDeliveryList");
-
+            JsonNode productImageList = jsonObjectQuotation.get("imageList");
             Quotation quotation = new Quotation();
-
-            Product product = new Product();
-            product.setId(productId);
-            quotation.setProduct(product);
-
+            quotation.setProductName(productName);
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate beginParsedDate = LocalDate.parse(beginDate, dateFormatter);
             LocalDate endParsedDate = LocalDate.parse(endDate, dateFormatter);
@@ -93,7 +111,6 @@ public class SupplierService {
             quotation.setPrice(price);
             Account account = new Account();
             account.setId(accountId);
-
             quotation.setAccount(account);
             LocalDateTime now = LocalDateTime.now();
             Timestamp timeNow = Timestamp.valueOf(now);
@@ -103,7 +120,7 @@ public class SupplierService {
             quotation.setStatus(StatusType.valueOf("PROCESSING"));
 
             List<ZoneDelivery> zoneDeliveries = new ArrayList<>();
-            if (zoneDeliveryList.isArray()) {
+            if (zoneDeliveryList != null && zoneDeliveryList.isArray()) {
                 for (JsonNode zoneDeliveryJson : zoneDeliveryList) {
                     ZoneDelivery zoneDelivery = new ZoneDelivery();
                     zoneDelivery.setAddress(zoneDeliveryJson.get("address").asText());
@@ -116,12 +133,20 @@ public class SupplierService {
                 zoneDelivery.setQuotation(saveQuotation);
                 zoneDeliveryRepository.save(zoneDelivery);
             }
+
+            for (int i = 0; i < productImageList.size(); i++) {
+                ProductImage productImage = new ProductImage();
+                productImage.setQuotation(saveQuotation);
+                productImage.setImageUrl("");
+                productImageRepository.save(productImage);
+            }
+
             if (saveQuotation.getId() != null) {
                 return ResponseEntity.status(HttpStatus.OK)
-                        .body(new ResponseObject("OK", "Successfully", ""));
+                        .body(new ResponseObject("OK", "Successfully", saveQuotation.getId()));
             } else {
                 return ResponseEntity.status(HttpStatus.OK)
-                        .body(new ResponseObject("ERROR", "Can not create a quotation", ""));
+                        .body(new ResponseObject("ERROR", "Can not create a quotation", saveQuotation.getId()));
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -131,7 +156,6 @@ public class SupplierService {
 
     public ResponseEntity<Object> updateStatus(String json) {
         ObjectMapper objectMapper = new ObjectMapper();
-
         try {
             if (json == null || json.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -153,6 +177,13 @@ public class SupplierService {
                 quotation.setStatus(StatusType.valueOf(status));
                 Quotation saveQuotation = quotationRepository.save(quotation);
                 if (saveQuotation.getId() != null) {
+                    String[] cc = {"n20dccn152@student.ptithcm.edu.vn"};
+                    String supplierEmail = null;
+                    Optional<Account> accountOptional = accountRepository.findById(saveQuotation.getAccount().getId());
+                    if (accountOptional.isPresent()) {
+                        supplierEmail = accountOptional.get().getEmail();
+                    }
+                    emailService.sendMail(supplierEmail, cc, "Thông tin chào hàng của bạn đã được duyệt", "Đây là email test");
                     return ResponseEntity.status(HttpStatus.OK)
                             .body(new ResponseObject("OK", "Successfully", ""));
                 }
@@ -189,10 +220,7 @@ public class SupplierService {
             Integer accountId = jsonObjectRequest.get("accountId") != null ?
                     jsonObjectRequest.get("accountId").asInt() : 1;
 
-            JsonNode warehouseDeliveryList = jsonObjectRequest.get("warehouseDeliveryList");
-
             SupplyCapacity supplyCapacity = new SupplyCapacity();
-
             Product product = new Product();
             product.setId(productId);
 
@@ -219,24 +247,7 @@ public class SupplierService {
             supplyCapacity.setUpdatedAt(updateAt);
             supplyCapacity.setStatus(StatusType.valueOf("PROCESSING"));
 
-            List<WarehouseDelivery> warehouseDeliveries = new ArrayList<>();
-            if (warehouseDeliveryList.isArray()) {
-                for (JsonNode warehouseDeliveryJson : warehouseDeliveryList) {
-                    WarehouseDelivery warehouseDelivery = new WarehouseDelivery();
-                    String address = warehouseDeliveryJson.get("address") != null ?
-                            warehouseDeliveryJson.get("address").asText() : "";
-                    Integer numberInWH = warehouseDeliveryJson.get("numberInWH") != null ?
-                            warehouseDeliveryJson.get("numberInWH").asInt() : -1;
-                    warehouseDelivery.setNumber(numberInWH);
-                    warehouseDelivery.setAddress(address);
-                    warehouseDeliveries.add(warehouseDelivery);
-                }
-            }
             SupplyCapacity saveSupplyCapacity = supplyCapacityRepository.save(supplyCapacity);
-            for (WarehouseDelivery warehouseDelivery : warehouseDeliveries) {
-                warehouseDelivery.setSupplyCapacity(supplyCapacity);
-                warehouseDeliveryRepository.save(warehouseDelivery);
-            }
 
             if (saveSupplyCapacity.getId() != null) {
                 return ResponseEntity.status(HttpStatus.OK)
@@ -250,7 +261,6 @@ public class SupplierService {
                     .body(new ResponseObject("ERROR", "An error occurred", e.getMessage()));
         }
     }
-
 
     public ResponseEntity<ResponseObject> findAllQuotation() {
         List<QuotationDTO> supplierListDTO = null;
@@ -277,17 +287,22 @@ public class SupplierService {
                     (List<StatusType>) convertedFilters.get("statusList"),
                     (LocalDate) convertedFilters.get("from"),
                     (LocalDate) convertedFilters.get("to"),
-                    (String) convertedFilters.get("search"),
                     pageable);
         } else {
             quotationPage = quotationRepository.findAll(pageable);
         }
         return quotationPage.hasContent() ?
                 ResponseEntity.ok(new ResponseObject("OK", "Successfully", quotationPage.getContent().stream().map(
-                        quotation -> modelMapper.map(
-                                quotation, QuotationDTO.class
-                        )
-                ))) :
+                        quotation -> {
+                            QuotationDTO quotationDTO = modelMapper.map(quotation, QuotationDTO.class);
+                            List<ZoneDeliveryDTO> zoneDeliveryDTOs = quotation.getZoneDeliveryList().stream()
+                                    .map(zoneDelivery -> modelMapper.map(zoneDelivery, ZoneDeliveryDTO.class))
+                                    .collect(Collectors.toList());
+                            quotationDTO.setZoneDeliveries(zoneDeliveryDTOs);
+                            return quotationDTO;
+                        }
+                ).collect(Collectors.toList())))
+                :
                 ResponseEntity.ok(new ResponseObject("Not found", "Not found", ""));
     }
 
@@ -376,6 +391,13 @@ public class SupplierService {
                 supplyCapacity.setStatus(StatusType.valueOf(status));
                 var saveSupplyCapacity = supplyCapacityRepository.save(supplyCapacity);
                 if (saveSupplyCapacity.getId() != null) {
+                    String[] cc = {"n20dccn152@student.ptithcm.edu.vn"};
+                    String supplierEmail = null;
+                    Optional<Account> accountOptional = accountRepository.findById(saveSupplyCapacity.getAccount().getId());
+                    if (accountOptional.isPresent()) {
+                        supplierEmail = accountOptional.get().getEmail();
+                    }
+                    emailService.sendMail(supplierEmail, cc, "Thông tin chào hàng của bạn đã được duyệt", "Đây là email test");
                     return ResponseEntity.status(HttpStatus.OK)
                             .body(new ResponseObject("OK", "Successfully", ""));
                 }

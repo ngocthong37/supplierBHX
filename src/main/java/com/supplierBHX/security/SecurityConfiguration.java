@@ -32,7 +32,7 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 .authorizeRequests(authorize -> authorize
                         .requestMatchers(
-                                "/api/v1/auth/**",
+                                "/api/v1/**",
                                 "/api/v1/quotation/**",
                                 "/v3/api-docs/**",
                                 "/swagger-resources",
@@ -46,16 +46,16 @@ public class SecurityConfiguration {
                                 "/api/v1/paymentResponse/**",
                                 "/api/v1/paymentResponseDetail/**"
                         ).permitAll()
-                        .requestMatchers("/api/v1/supply-capacity/**").hasAnyRole(ADMIN.name(), MANAGER.name())
-                        .requestMatchers("/api/v1/supplier/**").hasAnyRole(ADMIN.name(), MANAGER.name())
-//                        .requestMatchers("/api/v1/invoice/**").hasAnyRole(ADMIN.name())
-//                        .requestMatchers("/api/v1/paymentResponse/**").hasAnyRole(ADMIN.name())
-//                        .requestMatchers("/api/v1/paymentResponseDetail/**").hasAnyRole(ADMIN.name())
-                        .requestMatchers("/api/v1/ratingProduct/**").hasAnyRole(ADMIN.name())
-                        .requestMatchers("/api/v1/ratingImage/**").hasAnyRole(ADMIN.name())
-                        .requestMatchers("/api/v1/grnDetail/**").hasAnyRole(ADMIN.name())
-                        .requestMatchers("/api/v1/order/**").hasAnyRole(ADMIN.name())
-                        .anyRequest().authenticated()
+//                        .requestMatchers("/api/v1/supply-capacity/**").hasAnyRole(ADMIN.name(), MANAGER.name())
+//                        .requestMatchers("/api/v1/supplier/**").hasAnyRole(ADMIN.name(), MANAGER.name())
+////                        .requestMatchers("/api/v1/invoice/**").hasAnyRole(ADMIN.name())
+////                        .requestMatchers("/api/v1/paymentResponse/**").hasAnyRole(ADMIN.name())
+////                        .requestMatchers("/api/v1/paymentResponseDetail/**").hasAnyRole(ADMIN.name())
+//                        .requestMatchers("/api/v1/ratingProduct/**").hasAnyRole(ADMIN.name())
+//                        .requestMatchers("/api/v1/ratingImage/**").hasAnyRole(ADMIN.name())
+//                        .requestMatchers("/api/v1/grnDetail/**").hasAnyRole(ADMIN.name())
+//                        .requestMatchers("/api/v1/order/**").hasAnyRole(ADMIN.name())
+//                        .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
