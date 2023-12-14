@@ -41,14 +41,14 @@ public class PaymentResponseController {
             return paymentResponseService.findById(id);
     }
 
-    @GetMapping("/findByPurchaseOrderId/{purchaseOrderId}")
-    ResponseEntity<ResponseObject> findByPurchaseOrderId(@PathVariable Integer purchaseOrderId){
-        return paymentResponseService.findByPurchaseOrderId(purchaseOrderId);
-    }
-    @GetMapping("/findByInvoiceId/{invoiceId}")
-    ResponseEntity<ResponseObject> findByInvoiceId(@PathVariable Integer invoiceId){
-        return paymentResponseService.findByInvoiceId(invoiceId);
-    }
+//    @GetMapping("/findByPurchaseOrderId/{purchaseOrderId}")
+//    ResponseEntity<ResponseObject> findByPurchaseOrderId(@PathVariable Integer purchaseOrderId){
+//        return paymentResponseService.findByPurchaseOrderId(purchaseOrderId);
+//    }
+//    @GetMapping("/findByInvoiceId/{invoiceId}")
+//    ResponseEntity<ResponseObject> findByInvoiceId(@PathVariable Integer invoiceId){
+//        return paymentResponseService.findByInvoiceId(invoiceId);
+//    }
     @PostMapping("/insert")
     ResponseEntity<ResponseObject> insert(@RequestBody @Validated PaymentResponse paymentResponse, BindingResult result){
         if (!result.hasErrors()){
@@ -71,5 +71,15 @@ public class PaymentResponseController {
 //        }
 //    }
 
+    @GetMapping("/findByPaymentInformationId/{paymentInformationId}")
+    ResponseEntity<ResponseObject> findByPaymentInformationId(@PathVariable Integer paymentInformationId){
+        return paymentResponseService.findByPaymentInformationId(paymentInformationId);
+    }
 
+    @GetMapping("/findDataProductToInsert")
+    ResponseEntity<ResponseObject> findDataProductToInsert(@RequestParam String informationType,
+                                                           @RequestParam Integer informationId)
+    {
+        return paymentResponseService.findDataProductToInsert(informationType,informationId);
+    }
 }

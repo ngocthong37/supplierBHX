@@ -1,11 +1,15 @@
 package com.supplierBHX.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,12 +22,23 @@ public class Product {
     private Integer id;
     private String name;
 
-    @JsonBackReference
+    @JsonBackReference(value ="supplyCapacity-product")
     @OneToOne(mappedBy = "product")
     private SupplyCapacity supplyCapacity;
 
-    @JsonBackReference
+    @JsonBackReference(value = "quotation-product")
     @OneToOne(mappedBy = "product")
     private Quotation quotation;
+
+    @JsonManagedReference(value ="paymentResponse-product")
+    @JsonIgnore
+    @OneToMany(mappedBy = "product")
+    private List<PaymentResponse> paymentResponses;
+
+    @JsonManagedReference(value ="product-ratingProduct")
+    @JsonIgnore
+    @OneToMany(mappedBy = "product")
+    private List<RatingProduct> ratingProducts;
+
 
 }

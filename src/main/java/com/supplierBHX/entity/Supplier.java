@@ -2,6 +2,7 @@ package com.supplierBHX.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,14 +31,16 @@ public class Supplier {
     @OneToMany(mappedBy = "supplier")
     private List<Account> accounts;
 
-    @JsonIgnore
+    @JsonManagedReference(value = "invoice-supplier")
     @OneToMany(mappedBy = "supplier")
     private List<Invoice> invoices;
 
+    @JsonBackReference(value = "quotation-supplier")
     @JsonIgnore
     @OneToMany(mappedBy = "supplier")
     private List<Quotation> quotations;
 
+    @JsonManagedReference(value = "supplier-problem")
     @JsonIgnore
     @OneToMany(mappedBy = "supplier")
     private List<Problem> problems;
@@ -50,8 +53,19 @@ public class Supplier {
     @OneToMany(mappedBy = "supplier")
     private List<PurchaseOrder> purchaseOrders;
 
+    @JsonManagedReference(value = "supplier-ratingProduct")
     @JsonIgnore
     @OneToMany(mappedBy = "supplier")
     private List<RatingProduct> ratingProducts;
+
+    @JsonManagedReference(value = "supplier-goodsReceivedNote")
+    @JsonIgnore
+    @OneToMany(mappedBy = "supplier")
+    private List<GoodsReceivedNote> goodsReceivedNotes;
+
+    @JsonManagedReference(value = "supplier-paymentInformations")
+    @JsonIgnore
+    @OneToMany(mappedBy = "supplier")
+    private List<PaymentInformation> paymentInformations;
 
 }

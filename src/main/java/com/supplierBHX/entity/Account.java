@@ -1,8 +1,8 @@
 package com.supplierBHX.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import com.supplierBHX.Enum.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,19 +28,24 @@ public class Account implements UserDetails {
     private Boolean status;
     private String email;
 
-
+    @JsonManagedReference(value = "account-notification")
     @JsonIgnore
     @OneToMany(mappedBy = "account")
     private List<Notification> notifications;
 
+    @JsonManagedReference(value = "account-quotation")
     @JsonIgnore
     @OneToMany(mappedBy = "account")
     private List<Quotation> quotations;
 
+    @JsonManagedReference(value = "account-ratingFeedback")
+    @JsonIgnore
+    @OneToMany(mappedBy = "account")
+    private List<RatingFeedback> ratingFeedbackList;
+
     @JsonIgnore
     @OneToMany(mappedBy = "account")
     private List<SupplyCapacity> supplyCapacities;
-
 
     @ManyToOne
     @JoinColumn(name = "supplier_id")

@@ -29,12 +29,12 @@ public class Problem {
     private Integer employeeId;
     private Enum<ProblemType> problemType;
 
-    @JsonBackReference
+    @JsonBackReference(value = "supplier-problem")
     @ManyToOne
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 
-    @JsonManagedReference
+    @JsonManagedReference(value = "problem-problemDetails")
     @OneToMany(mappedBy = "problem")
     private List<ProblemDetail> problemDetails;
 

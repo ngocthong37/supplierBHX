@@ -1,7 +1,5 @@
 package com.supplierBHX.dto;
 
-import com.supplierBHX.entity.Invoice;
-import com.supplierBHX.entity.Product;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,11 +9,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class InvoiceDetailDTO {
+public class ProductDTO {
     private Integer id;
     private Integer quantity;
-    private Integer price;
-    private Integer invoiceId;
+    private Double price;
     private Integer productId;
     private String productName;
+
 }

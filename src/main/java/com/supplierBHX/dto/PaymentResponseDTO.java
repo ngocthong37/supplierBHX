@@ -24,12 +24,11 @@ public class PaymentResponseDTO {
     private LocalDate createdAt;
     private Integer updaterId;
     private Integer creatorId;
-    private Double priceOfInvoice;
-    private Double quantityOfInvoice;
-    private Double priceOfPurchaseOrder;
-    private Double quantityOfPurchaseOrder;
-    private Integer purchaseOrderId;
-    private Integer invoiceId;
-    private Product product;
-    private Integer accountId;
+    private Double price;
+    private Double quantity;
+    private Double adjustedPrice;
+    private Double adjustedQuantity;
+    private Integer paymentInformationId;
+    private Integer productId;
+    private String productName;
 }

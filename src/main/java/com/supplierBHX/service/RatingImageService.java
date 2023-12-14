@@ -1,5 +1,6 @@
 package com.supplierBHX.service;
 
+import com.supplierBHX.dto.PaymentResponseDTO;
 import com.supplierBHX.dto.RatingImageDTO;
 import com.supplierBHX.dto.RatingProductDTO;
 import com.supplierBHX.entity.RatingImage;
@@ -31,6 +32,16 @@ public class RatingImageService {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", ratingImageList.stream().map(ratingImage -> modelMapper.map(ratingImage, RatingImageDTO.class)).toList()));
         }
         else {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
+        }
+    }
+
+    public ResponseEntity<ResponseObject> findByRatingProductId(Integer ratingProductId) {
+        List<RatingImage> ratingImageList = new ArrayList<>();
+        ratingImageList = ratingImageRepository.findByRatingProductId(ratingProductId);
+        if(!ratingImageList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", ratingImageList.stream().map(ratingImage -> modelMapper.map(ratingImage, RatingImageDTO.class)).toList()));
+        } else {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
         }
     }

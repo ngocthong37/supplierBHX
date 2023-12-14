@@ -17,13 +17,13 @@ public class ProblemDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @JsonBackReference
+    @JsonBackReference(value = "problem-problemDetails")
     @ManyToOne
     @JoinColumn(name = "problem_id")
     private Problem problem;
     private String description;
 
-    @JsonBackReference
+    @JsonBackReference(value = "purchaseOrder-problemDetails")
     @ManyToOne
     @JoinColumn(name = "purchase_order_id")
     private PurchaseOrder purchaseOrder;

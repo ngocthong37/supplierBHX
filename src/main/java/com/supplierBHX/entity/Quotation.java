@@ -38,17 +38,17 @@ public class Quotation {
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
-    @JsonBackReference
+    @JsonBackReference(value = "quotation-supplier")
     @ManyToOne
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 
-    @JsonBackReference
+    @JsonBackReference(value = "account-quotation")
     @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @JsonManagedReference
+    @JsonManagedReference(value = "quotation-product")
     @OneToOne
     @JoinColumn(name = "product_id")
     private Product product;
