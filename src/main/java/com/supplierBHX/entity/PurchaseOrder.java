@@ -1,6 +1,7 @@
 package com.supplierBHX.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.supplierBHX.Enum.UnitType;
 import com.supplierBHX.Enum.UtilConstString;
@@ -48,11 +49,16 @@ public class PurchaseOrder {
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 
-    @JsonManagedReference
+    @JsonManagedReference(value = "purchaseOrder-purchaseOrderDetails")
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="purchaseOrder")
     private List<PurchaseOrderDetail> purchaseOrderDetails;
 
-    @JsonBackReference
+    @JsonManagedReference(value = "purchaseOrder-problemDetails")
     @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
     private List<ProblemDetail> problemDetails;
+
+    @JsonManagedReference(value ="purchaseOrder-paymentInformations")
+    @OneToMany(mappedBy = "purchaseOrder")
+    private List<PaymentInformation> paymentInformations;
+
 }

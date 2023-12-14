@@ -16,8 +16,8 @@ import java.util.Date;
 public class GRNDetailDTO {
     private Integer id;
     private Integer productId;
-    private Integer qualityProduct;
-    private Integer statusProduct;
+    private String productName;
+    private String qualityProduct;
     private Double price;
     private Integer numberInPO;
     private Integer numberReceived;

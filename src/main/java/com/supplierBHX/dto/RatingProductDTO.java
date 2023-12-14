@@ -15,13 +15,17 @@ import java.time.LocalDate;
 @Setter
 public class RatingProductDTO {
     private Integer id;
-    private Product product;
-    private Float quantityScore;
-    private Float qualityScore;
-    private Double price;
+    private Integer productId;
+    private String productName;
+    private Integer priceScore;
+    private Integer quantityScore;
+    private Integer qualityScore;
+    private Integer deliverScore;
     private LocalDate ratingDate;
-    private Boolean cooperativeState;
     private Float ratingScore;
-    private String note;
+    private Integer totalOrderQuantity;
+    private Integer totalDeliveredQuantity;
+    private Integer totalReceivedQuantity;
+    private Integer createId;
     private Integer supplierId;
 }

@@ -1,6 +1,7 @@
 package com.supplierBHX.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,6 +19,7 @@ public class RatingImage {
     private Integer id;
     private String image;
 
+    @JsonBackReference(value = "ratingProduct-ratingImage")
     @ManyToOne
     @JoinColumn(name = "rating_product_id")
     private RatingProduct ratingProduct;

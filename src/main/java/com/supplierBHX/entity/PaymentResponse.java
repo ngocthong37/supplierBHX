@@ -1,5 +1,7 @@
 package com.supplierBHX.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.supplierBHX.Enum.ResponseStatus;
 import com.supplierBHX.Enum.PaymentResponseType;
 import com.supplierBHX.Enum.PaymentStatus;
@@ -27,27 +29,20 @@ public class PaymentResponse {
     private LocalDate createdAt;
     private Integer updaterId;
     private Integer creatorId;
-    private Double priceOfInvoice;
-    private Double quantityOfInvoice;
-    private Double priceOfPurchaseOrder;
-    private Double quantityOfPurchaseOrder;
+    private Double price;
+    private Double quantity;
+    private Double adjustedPrice;
+    private Double adjustedQuantity;
 
+    @JsonBackReference(value ="paymentInformation-paymentResponse")
     @ManyToOne
-    @JoinColumn(name = "purchaseOrder_id")
-    private PurchaseOrder purchaseOrder;
+    @JoinColumn(name = "paymentInformation_id")
+    private PaymentInformation paymentInformation;
 
-    @ManyToOne
-    @JoinColumn(name = "invoice_id")
-    private Invoice invoice;
-
+    @JsonBackReference(value ="paymentResponse-product")
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
-
-
-    @ManyToOne
-    @JoinColumn(name = "account_id")
-    private Account account;
 
 
 }

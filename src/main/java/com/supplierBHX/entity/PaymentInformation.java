@@ -3,7 +3,7 @@ package com.supplierBHX.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.supplierBHX.Enum.PaymentStatus;
+import com.supplierBHX.Enum.PaymentInformationType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,26 +18,29 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-public class Invoice {
+public class PaymentInformation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Enumerated(EnumType.STRING)
-    private PaymentStatus paymentStatus;
-    @Temporal(TemporalType.DATE)
-    private LocalDate paymentDate;
-    private Integer invoiceNumber;
+    private PaymentInformationType informationType;
+    private Integer informationId;
+    private String image;
+    private LocalDate createdAt;
 
-//    @JsonIgnore
-    @OneToOne
-    @JoinColumn(name = "purchaseOrder_id")
-    private PurchaseOrder purchaseOrder;
-
-//    @JsonIgnore
-    @JsonBackReference(value = "invoice-supplier")
+    @JsonBackReference(value = "supplier-paymentInformations")
     @ManyToOne
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 
+    @JsonBackReference(value = "purchaseOrder-paymentInformations")
+    @ManyToOne
+    @JoinColumn(name = "purchaseOrder_id")
+    private PurchaseOrder purchaseOrder;
+
+    @JsonManagedReference(value ="paymentInformation-paymentResponse")
+    @JsonIgnore
+    @OneToMany(mappedBy = "paymentInformation")
+    private List<PaymentResponse> paymentResponses;
 
 }

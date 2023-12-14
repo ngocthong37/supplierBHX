@@ -1,8 +1,11 @@
 package com.supplierBHX.service;
 
 import com.supplierBHX.dto.PaymentResponseDTO;
+import com.supplierBHX.dto.ProductDTO;
 import com.supplierBHX.entity.PaymentResponse;
 import com.supplierBHX.entity.ResponseObject;
+import com.supplierBHX.repository.GRNDetailRepository;
+import com.supplierBHX.repository.InvoiceDetailRepository;
 import com.supplierBHX.repository.PaymentResponseRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,12 @@ public class PaymentResponseService {
 
     @Autowired
     private PaymentResponseRepository paymentResponseRepository;
+
+    @Autowired
+    private GRNDetailRepository grnDetailRepository;
+
+    @Autowired
+    private InvoiceDetailRepository invoiceDetailRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -71,9 +80,9 @@ public class PaymentResponseService {
         return paymentResponseRepository.save(paymentResponse);
     }
 
-    public ResponseEntity<ResponseObject> findByPurchaseOrderId(Integer purchaseOrderId) {
+    public ResponseEntity<ResponseObject> findByPaymentInformationId(Integer paymentInformationId) {
         List<PaymentResponse> paymentResponselList = new ArrayList<PaymentResponse>();
-        paymentResponselList = paymentResponseRepository.findByPurchaseOrderId(purchaseOrderId);
+        paymentResponselList = paymentResponseRepository.findByPaymentInformationId(paymentInformationId);
         if (!paymentResponselList.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", paymentResponselList.stream().map(paymentResponse -> modelMapper.map(paymentResponse, PaymentResponseDTO.class)).toList()));
         }
@@ -82,14 +91,41 @@ public class PaymentResponseService {
         }
     }
 
-    public ResponseEntity<ResponseObject> findByInvoiceId(Integer invoiceId) {
-        List<PaymentResponse> paymentResponselList = new ArrayList<PaymentResponse>();
-        paymentResponselList = paymentResponseRepository.findByInvoiceId(invoiceId);
-        if (!paymentResponselList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", paymentResponselList.stream().map(paymentResponse -> modelMapper.map(paymentResponse, PaymentResponseDTO.class)).toList()));
+    public ResponseEntity<ResponseObject> findDataProductToInsert(String informationType, Integer informationId) {
+        List<ProductDTO> productDTOList = new ArrayList<ProductDTO>();
+        if(informationType.equals("GOODSRECEIVEDNOTE")){
+            productDTOList = grnDetailRepository.findDataProductToInsert(informationId);
+        } else {
+            productDTOList = invoiceDetailRepository.findDataProductToInsert(informationId);
+
+        }
+        if (!productDTOList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", productDTOList));
         }
         else {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
         }
     }
+
+//    public ResponseEntity<ResponseObject> findByPurchaseOrderId(Integer purchaseOrderId) {
+//        List<PaymentResponse> paymentResponselList = new ArrayList<PaymentResponse>();
+//        paymentResponselList = paymentResponseRepository.findByPurchaseOrderId(purchaseOrderId);
+//        if (!paymentResponselList.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", paymentResponselList.stream().map(paymentResponse -> modelMapper.map(paymentResponse, PaymentResponseDTO.class)).toList()));
+//        }
+//        else {
+//            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
+//        }
+//    }
+//
+//    public ResponseEntity<ResponseObject> findByInvoiceId(Integer invoiceId) {
+//        List<PaymentResponse> paymentResponselList = new ArrayList<PaymentResponse>();
+//        paymentResponselList = paymentResponseRepository.findByInvoiceId(invoiceId);
+//        if (!paymentResponselList.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", paymentResponselList.stream().map(paymentResponse -> modelMapper.map(paymentResponse, PaymentResponseDTO.class)).toList()));
+//        }
+//        else {
+//            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
+//        }
+//    }
 }
