@@ -26,10 +26,6 @@ public class Product {
     @OneToOne(mappedBy = "product")
     private SupplyCapacity supplyCapacity;
 
-    @JsonBackReference(value = "quotation-product")
-    @OneToOne(mappedBy = "product")
-    private Quotation quotation;
-
     @JsonManagedReference(value ="paymentResponse-product")
     @JsonIgnore
     @OneToMany(mappedBy = "product")
