@@ -1,12 +1,14 @@
 package com.supplierBHX.dto;
 
 
+import com.supplierBHX.entity.ZoneDelivery;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,4 +29,6 @@ public class QuotationDTO {
     private String createdAt;
     private String description;
     private LocalDate dateConfirmed;
+    private String defaultImageUrl;
+    private List<ZoneDeliveryDTO> zoneDeliveries;
 }
