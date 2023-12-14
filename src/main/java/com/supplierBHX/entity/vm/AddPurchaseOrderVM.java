@@ -18,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AddPurchaseOrderVM {
 
+
     private Date deliveryDate;
     private Date receiveDate;
     private Date createdAt = Date.from(LocalDateTime.now().atZone(java.time.ZoneId.systemDefault()).toInstant());
