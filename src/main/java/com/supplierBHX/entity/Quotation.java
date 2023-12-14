@@ -37,6 +37,8 @@ public class Quotation {
     private Integer employeeId;
     private Timestamp createdAt;
     private Timestamp updatedAt;
+    private String productName;
+    private String defaultImageUrl;
 
     @JsonBackReference(value = "quotation-supplier")
     @ManyToOne
@@ -48,10 +50,6 @@ public class Quotation {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @JsonManagedReference(value = "quotation-product")
-    @OneToOne
-    @JoinColumn(name = "product_id")
-    private Product product;
 
     @JsonIgnore
     @OneToMany(mappedBy = "quotation",  cascade = CascadeType.ALL)
