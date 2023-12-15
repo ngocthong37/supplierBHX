@@ -56,7 +56,7 @@ public class RatingProductController {
     ) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("ratingDate").descending());
-        return ratingProductService.getFilteredRatingFeedback(pageable, filters);
+        return ratingProductService.getFilteredRatingProduct(pageable, filters);
     }
 
 }

@@ -22,4 +22,5 @@ public class PaymentInformationDTO {
     private LocalDate createdAt;
     private Integer supplierId;
     private Integer purchaseOrderId;
+    private String purchaseOrderCode;
 }

@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 @NoArgsConstructor
@@ -27,9 +28,9 @@ public class RatingProduct {
     private Integer deliverScore;
     private LocalDate ratingDate;
     private Float ratingScore;
-    private Integer totalOrderQuantity;
-    private Integer totalDeliveredQuantity;
-    private Integer totalReceivedQuantity;
+    private Double totalOrderQuantity;
+    private Double totalDeliveredQuantity;
+    private Double totalReceivedQuantity;
     private Integer createId;
 
     @JsonBackReference(value = "product-ratingProduct")

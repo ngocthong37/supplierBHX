@@ -24,6 +24,7 @@ public class PurchaseOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private String code;
     private Double total;
     private Date deliveryDate;
     private Date receiveDate;

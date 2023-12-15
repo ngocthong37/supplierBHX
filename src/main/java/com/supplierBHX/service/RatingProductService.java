@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -79,15 +80,15 @@ public class RatingProductService {
 
     }
 
-    public ResponseEntity<ResponseObject> getFilteredRatingFeedback(Pageable pageable, Map<String, Object> filters) {
+    public ResponseEntity<ResponseObject> getFilteredRatingProduct(Pageable pageable, Map<String, Object> filters) {
         Page<RatingProduct> ratingProductPage;
 
         if (filters != null && !filters.isEmpty()) {
             Map<String, Object> convertedFilters = convertFilters(filters);
             ratingProductPage = ratingProductRepository.findByFilters(
                     (String) convertedFilters.get("search"),
-                    (LocalDate) convertedFilters.get("startDate"),
-                    (LocalDate) convertedFilters.get("endDate"),
+                    (Integer) convertedFilters.get("month"),
+                    (Integer) convertedFilters.get("year"),
                     (Integer) convertedFilters.get("supplierId"),
                     (Float) convertedFilters.get("minRatingScore"),
                     (Float) convertedFilters.get("maxRatingScore"),
@@ -111,17 +112,18 @@ public class RatingProductService {
             convertedFilters.put("search", paymentInformationNumber);
         }
 
-        if (filters.containsKey("startDate")) {
-            String paymentDateFromString = (String) filters.get("startDate");
-            LocalDate paymentDateFrom = LocalDate.parse(paymentDateFromString, DateTimeFormatter.ISO_DATE);
-            convertedFilters.put("startDate", paymentDateFrom);
+        if (filters.containsKey("month")) {
+            String monthString = (String) filters.get("month");
+            Integer month = Integer.parseInt(monthString);
+            convertedFilters.put("month", month);
         }
 
-        if (filters.containsKey("endDate")) {
-            String paymentDateToString = (String) filters.get("endDate");
-            LocalDate paymentDateTo = LocalDate.parse(paymentDateToString, DateTimeFormatter.ISO_DATE);
-            convertedFilters.put("endDate", paymentDateTo);
+        if (filters.containsKey("year")) {
+            String yearString = (String) filters.get("year");
+            Integer year = Integer.parseInt(yearString);
+            convertedFilters.put("year", year);
         }
+
         if (filters.containsKey("minRatingScore")) {
             String minRatingScoreString = (String) filters.get("minRatingScore");
             Float minRatingScore = Float.parseFloat(minRatingScoreString);
