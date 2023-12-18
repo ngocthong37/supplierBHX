@@ -85,4 +85,9 @@ public class SupplierController {
         return supplierService.uploadImage(files, namePath, quotationId);
     }
 
+    @PutMapping("quotation/delete/{quotationId}")
+    ResponseEntity<Object>  deleteQuotation(@PathVariable Integer quotationId) {
+        return supplierService.deleteQuotation(quotationId);
+    }
+
 }

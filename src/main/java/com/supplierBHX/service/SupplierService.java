@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.supplierBHX.Enum.StatusType;
 import com.supplierBHX.Enum.UnitType;
+import com.supplierBHX.dto.ProductImageUrlDTO;
 import com.supplierBHX.dto.QuotationDTO;
 import com.supplierBHX.dto.SupplyCapacityDTO;
 import com.supplierBHX.dto.ZoneDeliveryDTO;
@@ -55,14 +56,26 @@ public class SupplierService {
     public List<String> uploadImage(List<MultipartFile> files, String namePath, Integer quotationId) {
         List<String> imageUrls;
 
-
         imageUrls = storageService.uploadImages(files, namePath);
+        List<ProductImage> productImageList = productImageRepository.findByQuotationId(quotationId);
 
         for (int i = 0; i < imageUrls.size(); i++) {
-            quotationRepository.updateImage(imageUrls.get(i), quotationId);
+            quotationRepository.updateImage(imageUrls.get(i), quotationId, productImageList.get(i).getId());
         }
         quotationRepository.updateDefaultImage(imageUrls.get(0), quotationId);
         return imageUrls;
+    }
+
+    public ResponseEntity<Object> deleteQuotation(Integer quotationId) {
+        var res = quotationRepository.deleteQuotation(quotationId);
+        if (res > 0) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseObject("OK", "Successfully", ""));
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseObject("ERROR", "An error occurred", ""));
+        }
     }
 
 
@@ -82,11 +95,10 @@ public class SupplierService {
                     jsonObjectQuotation.get("number").asDouble() : 1;
             String unit = jsonObjectQuotation.get("unit") != null ?
                     jsonObjectQuotation.get("unit").asText() : "";
-            String beginDate = jsonObjectQuotation.get("beginDate") != null ?
-                    jsonObjectQuotation.get("beginDate").asText() : "";
-            String endDate = jsonObjectQuotation.get("endDate") != null ?
-                    jsonObjectQuotation.get("endDate").asText() : "";
-            String description = jsonObjectQuotation.get("description") != null ?
+            String beginDate = jsonObjectQuotation.has("beginDate") && !jsonObjectQuotation.get("beginDate").asText().isEmpty() ?
+                    jsonObjectQuotation.get("beginDate").asText() : null;
+            String endDate = jsonObjectQuotation.has("endDate") && !jsonObjectQuotation.get("endDate").asText().isEmpty() ?
+                    jsonObjectQuotation.get("endDate").asText() : null;            String description = jsonObjectQuotation.get("description") != null ?
                     jsonObjectQuotation.get("description").asText() : "";
             Integer accountId = jsonObjectQuotation.get("accountId") != null ?
                     jsonObjectQuotation.get("accountId").asInt() : 1;
@@ -98,8 +110,15 @@ public class SupplierService {
             Quotation quotation = new Quotation();
             quotation.setProductName(productName);
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate beginParsedDate = LocalDate.parse(beginDate, dateFormatter);
-            LocalDate endParsedDate = LocalDate.parse(endDate, dateFormatter);
+            LocalDate beginParsedDate;
+            LocalDate endParsedDate;
+            if (beginDate != null && endDate != null) {
+                beginParsedDate = LocalDate.parse(beginDate, dateFormatter);
+                endParsedDate = LocalDate.parse(endDate, dateFormatter);
+            } else {
+                 beginParsedDate = null;
+                 endParsedDate = null;
+            }
             Supplier supplier = new Supplier();
             supplier.setId(supplierId);
             quotation.setSupplier(supplier);
@@ -219,11 +238,14 @@ public class SupplierService {
                     jsonObjectRequest.get("endDate").asText() : "";
             Integer accountId = jsonObjectRequest.get("accountId") != null ?
                     jsonObjectRequest.get("accountId").asInt() : 1;
+            String warehouseAddress = jsonObjectRequest.get("warehouseAddress") != null ?
+                    jsonObjectRequest.get("warehouseAddress").asText() : "";
+            String reasonChange = jsonObjectRequest.get("reasonChange") != null ?
+                    jsonObjectRequest.get("reasonChange").asText() : null;
 
             SupplyCapacity supplyCapacity = new SupplyCapacity();
             Product product = new Product();
             product.setId(productId);
-
             supplyCapacity.setProduct(product);
 
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -236,6 +258,7 @@ public class SupplierService {
             supplyCapacity.setUnitType(UnitType.valueOf(unit));
             supplyCapacity.setBeginDate(beginParsedDate);
             supplyCapacity.setEndDate(endParsedDate);
+            supplyCapacity.setImageUrlDefault("https://th.bing.com/th/id/R.4f4d55e784bd952b663e87cf830971f5?rik=xSTuHFCQi6%2bj9g&pid=ImgRaw&r=0");
 
             Account account = new Account();
             account.setId(accountId);
@@ -246,7 +269,8 @@ public class SupplierService {
             Timestamp updateAt = Timestamp.valueOf(now);
             supplyCapacity.setUpdatedAt(updateAt);
             supplyCapacity.setStatus(StatusType.valueOf("PROCESSING"));
-
+            supplyCapacity.setWarehouseAddress(warehouseAddress);
+            supplyCapacity.setReasonChange(reasonChange);
             SupplyCapacity saveSupplyCapacity = supplyCapacityRepository.save(supplyCapacity);
 
             if (saveSupplyCapacity.getId() != null) {
@@ -289,7 +313,7 @@ public class SupplierService {
                     (LocalDate) convertedFilters.get("to"),
                     pageable);
         } else {
-            quotationPage = quotationRepository.findAll(pageable);
+            quotationPage = quotationRepository.findAllWithCondition(pageable);
         }
         return quotationPage.hasContent() ?
                 ResponseEntity.ok(new ResponseObject("OK", "Successfully", quotationPage.getContent().stream().map(
@@ -298,6 +322,10 @@ public class SupplierService {
                             List<ZoneDeliveryDTO> zoneDeliveryDTOs = quotation.getZoneDeliveryList().stream()
                                     .map(zoneDelivery -> modelMapper.map(zoneDelivery, ZoneDeliveryDTO.class))
                                     .collect(Collectors.toList());
+                            List<ProductImageUrlDTO> productImageUrlDTOS = quotation.getProductImageList().stream()
+                                    .map(productImage -> modelMapper.map(productImage, ProductImageUrlDTO.class))
+                                    .collect(Collectors.toList());
+                            quotationDTO.setProductImageUrlList(productImageUrlDTOS);
                             quotationDTO.setZoneDeliveries(zoneDeliveryDTOs);
                             return quotationDTO;
                         }
@@ -317,7 +345,7 @@ public class SupplierService {
                     (String) convertedFilters.get("search"),
                     pageable);
         } else {
-            supplyCapacityPage = supplyCapacityRepository.findAll(pageable);
+            supplyCapacityPage = supplyCapacityRepository.findLatestByProductId(pageable);
         }
         return supplyCapacityPage.hasContent() ?
                 ResponseEntity.ok(new ResponseObject("OK", "Successfully", supplyCapacityPage.getContent().stream().map(

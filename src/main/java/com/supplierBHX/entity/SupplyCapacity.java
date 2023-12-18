@@ -32,10 +32,13 @@ public class SupplyCapacity {
     @Enumerated(EnumType.STRING)
     private StatusType status;
     private LocalDate dateConfirmed;
+    private Timestamp deliveryTime;
     private Timestamp createdAt;
     private Timestamp updatedAt;
     private Integer employeeId;
     private String warehouseAddress;
+    private String imageUrlDefault;
+    private String reasonChange;
 
     //@JsonBackReference
     @ManyToOne
@@ -48,7 +51,7 @@ public class SupplyCapacity {
     private Account account;
 
     @JsonManagedReference(value ="supplyCapacity-product")
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
 
