@@ -22,9 +22,5 @@ public class ProblemDetail {
     @JoinColumn(name = "problem_id")
     private Problem problem;
     private String description;
-
-    @JsonBackReference(value = "purchaseOrder-problemDetails")
-    @ManyToOne
-    @JoinColumn(name = "purchase_order_id")
-    private PurchaseOrder purchaseOrder;
 }
+

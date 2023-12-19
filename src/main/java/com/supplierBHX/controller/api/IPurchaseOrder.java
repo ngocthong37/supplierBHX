@@ -1,5 +1,6 @@
 package com.supplierBHX.controller.api;
 
+import com.supplierBHX.Enum.UtilConstString;
 import com.supplierBHX.entity.PurchaseOrder;
 import com.supplierBHX.entity.vm.AddPurchaseOrderVM;
 import io.swagger.annotations.ApiParam;
@@ -91,7 +92,6 @@ public interface IPurchaseOrder {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size);
 
-
     @Operation(
             summary = "Update confirm status of an order",
             description = "",
@@ -110,9 +110,9 @@ public interface IPurchaseOrder {
             @RequestParam Integer id,
             @RequestParam
             @ApiParam(
-                    allowableValues = "WAITING, PROCESSING, APPROVED, REJECTED",
-                    example = "WAITING,  PROCESSING, APPROVED, REJECTED",
-                    defaultValue = "WAITING",
+//                    allowableValues = "NOT_CONFIRMED, RECEIVED, APPROVED, REJECTED",
+//                    example = "WAITING,  PROCESSING, APPROVED, REJECTED",
+//                    defaultValue = "WAITING",
                     type = "String")
             String confirmStatus);
 
@@ -147,20 +147,44 @@ public interface IPurchaseOrder {
     ResponseEntity<Page<PurchaseOrder>> filterPurchaseOrders(
             @Parameter(description = "Input any keywords for searching the list of purchase orders")
             @RequestParam(value = "accountId", required = false) String accountId,
-            @RequestParam(value = "keywords", required = false) List<String> keywords,
+            @RequestParam(value = "keywords", required = false) String keywords,
             @RequestParam(name = "from", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam(name = "to", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
-            @RequestParam(name = "confirmStatus", required = false) List<String> confirmStatuses,
-            @RequestParam(name = "deliveryStatus", required = false) List<String> deliveryStatuses,
+            @ApiParam(
+                    allowableValues = "NOT_CONFIRMED, RECEIVED, APPROVED, REJECTED, DELIVERING, COMPLETED",
+                    example = "NOT_CONFIRMED, RECEIVED, APPROVED, REJECTED, DELIVERING, COMPLETED",
+                    defaultValue = "COMPLETED",
+                    type = "String")
+            @RequestParam(name = "status", required = false) String status,
             @RequestParam(name = "warehouseId", required = false) List<Integer> warehouseIds,
             @RequestParam(name = "employeeId", required = false) List<Integer> employeeIds,
             @RequestParam(name = "supplierId", required = false) List<Integer> supplierIds,
-            @RequestParam(name = "sort", required = false, defaultValue = "id,asc") String sort,
+//            @RequestParam(name = "sort", required = false, defaultValue = "id,asc") String sort,
             @RequestParam(name = "page", required = false, defaultValue = "1") int page,
             @RequestParam(name = "size", required = false, defaultValue = "10") int size
     );
 
-
+    @Operation(
+            summary = "Update status of an order",
+            description = "",
+            tags = "Purchase Order",
+            security = @SecurityRequirement(name = "token_auth")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Update successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid parameters", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized, missing or invalid JWT", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Access denied, do not have permission to access this resource", content = @Content),
+    })
+    @PatchMapping("/updateStatusForOrder")
+    ResponseEntity<PurchaseOrder> updateStatusForOrder(
+            @RequestParam Integer id,
+            @RequestParam
+            @ApiParam(allowableValues = "NOT_CONFIRMED, RECEIVED, DELIVERING, COMPLETED",
+                    example = "NOT_CONFIRMED, RECEIVED, DELIVERING, COMPLETED",
+                    defaultValue = "RECEIVED",
+                    type = "String")
+            String status);
 }

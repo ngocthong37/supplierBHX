@@ -22,14 +22,32 @@ public class UtilConstString {
 
     @Getter
     public enum ConfirmedStatus {
-        WAITING("WAITING"),
-        PROCESSING("PROCESSING"),
+        NOT_CONFIRMED("NOT_CONFIRMED"),
+        RECEIVED("RECEIVED"),
         APPROVED("APPROVED"),
-        REJECTED("REJECTED");
-
+        REJECTED("REJECTED"),
+        DELIVERING("DELIVERING"),
+        COMPLETED("COMPLETED"),
+        EXPIRED("EXPIRED");
         private final String value;
 
         ConfirmedStatus(String value) {
+            this.value = value;
+        }
+
+    }
+
+
+    @Getter
+    public enum ProblemType {
+        Delay("Delay"),
+        CannotDelivery("CannotDelivery"),
+        MissingGoods("MissingGoods"),
+        UpdateQuantity("UpdateQuantity");
+
+        private final String value;
+
+        ProblemType(String value) {
             this.value = value;
         }
 

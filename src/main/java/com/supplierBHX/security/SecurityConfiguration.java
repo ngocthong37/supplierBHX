@@ -47,6 +47,7 @@ public class SecurityConfiguration {
                                 "/api/v1/paymentResponse/**",
                                 "/api/v1/paymentResponseDetail/**",
                                 "/api/v1/order/**",
+                                "/api/v1/orderDetail/**",
                                 "/api/v1/invoiceDetail/**",
                                 "/api/v1/ratingProduct/**",
                                 "/api/v1/ratingImage/**",

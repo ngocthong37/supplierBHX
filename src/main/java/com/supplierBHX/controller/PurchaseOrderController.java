@@ -1,5 +1,6 @@
 package com.supplierBHX.controller;
 
+import com.supplierBHX.Enum.UtilConstString;
 import com.supplierBHX.controller.api.IPurchaseOrder;
 import com.supplierBHX.entity.PurchaseOrder;
 import com.supplierBHX.entity.ResponseObject;
@@ -87,14 +88,33 @@ public class PurchaseOrderController implements IPurchaseOrder {
     }
 
     @Override
-    public ResponseEntity<Page<PurchaseOrder>> filterPurchaseOrders(String accountId, List<String> keywords, LocalDate from, LocalDate to, List<String> confirmStatuses, List<String> deliveryStatuses, List<Integer> warehouseIds, List<Integer> employeeIds, List<Integer> supplierIds, String sort, int page, int size) {
+    public ResponseEntity<Page<PurchaseOrder>> filterPurchaseOrders(
+            String accountId,
+            String keywords,
+            LocalDate from,
+            LocalDate to,
+            String status,
+            List<Integer> warehouseIds,
+            List<Integer> employeeIds,
+            List<Integer> supplierIds,
+            // String sort,
+            int page,
+            int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<PurchaseOrder> filteredPurchaseOrders = orderService.filterPurchaseOrders( accountId,
-                keywords, from, to, confirmStatuses, deliveryStatuses,
-                warehouseIds, employeeIds, supplierIds, sort, pageable
+                keywords, from, to, status,
+                warehouseIds, employeeIds, supplierIds, pageable
         );
         return ResponseEntity
                 .status(filteredPurchaseOrders.stream().findAny().isPresent() ? HttpStatus.OK : HttpStatus.NOT_FOUND)
                 .body(filteredPurchaseOrders);
+    }
+
+    @Override
+    public ResponseEntity<PurchaseOrder> updateStatusForOrder(Integer id, String status) {
+        PurchaseOrder updatePurchaseOrder = orderService.updateStatusForOrder(id, status);
+        return ResponseEntity
+                .status(updatePurchaseOrder != null ? HttpStatus.OK : HttpStatus.NOT_IMPLEMENTED)
+                .body(updatePurchaseOrder);
     }
 }
