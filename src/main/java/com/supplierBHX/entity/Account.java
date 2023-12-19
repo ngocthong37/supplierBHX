@@ -25,6 +25,7 @@ public class Account implements UserDetails {
     private Integer id;
     private String userName;
     private String password;
+    private String name;
     private Boolean status;
     private String email;
 

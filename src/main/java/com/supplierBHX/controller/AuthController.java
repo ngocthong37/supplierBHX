@@ -33,14 +33,6 @@ public class AuthController {
         return ResponseEntity.ok(service.authenticate(request));
     }
 
-    @PutMapping("/change-password")
-    public ResponseEntity<Object> updatePassword(
-            @RequestBody String json
-    ) {
-        return ResponseEntity.ok(service.updatePassword(json));
-    }
-
-
     @PostMapping("/refresh-token")
     public void refreshToken(
             HttpServletRequest request,

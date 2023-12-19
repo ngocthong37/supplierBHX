@@ -4,9 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.supplierBHX.Enum.StatusType;
 import com.supplierBHX.Enum.UnitType;
-import com.supplierBHX.dto.QuotationDTO;
-import com.supplierBHX.dto.SupplyCapacityDTO;
-import com.supplierBHX.dto.ZoneDeliveryDTO;
+import com.supplierBHX.dto.*;
 import com.supplierBHX.entity.*;
 import com.supplierBHX.repository.*;
 import org.modelmapper.ModelMapper;
@@ -50,6 +48,9 @@ public class SupplierService {
 
     @Autowired
     private StorageService storageService;
+
+    @Autowired
+    private SupplierRepository supplierRepository;
 
 
     public List<String> uploadImage(List<MultipartFile> files, String namePath, Integer quotationId) {
@@ -452,5 +453,13 @@ public class SupplierService {
         return statusList;
     }
 
-
+    public ResponseEntity<ResponseObject> findSupplierById(Integer id) {
+        Optional<Supplier> supplier = supplierRepository.findById(id);
+        if (supplier.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", supplier.stream().map(supplier1 -> modelMapper.map(supplier1, SupplierDTO.class)).collect(Collectors.toList())));
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
+        }
+    }
 }

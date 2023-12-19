@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.Map;
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping(value = "/api/v1/ratingProduct")
 public class RatingProductController {
@@ -54,7 +55,6 @@ public class RatingProductController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) Map<String, Object> filters
     ) {
-
         Pageable pageable = PageRequest.of(page, size, Sort.by("ratingDate").descending());
         return ratingProductService.getFilteredRatingProduct(pageable, filters);
     }
