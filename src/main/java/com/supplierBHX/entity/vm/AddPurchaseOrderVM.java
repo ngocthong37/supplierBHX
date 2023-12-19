@@ -26,7 +26,7 @@ public class AddPurchaseOrderVM {
     private Double VAT = 0.1;
 
     @Enumerated(EnumType.STRING)
-    private UtilConstString.ConfirmedStatus confirmStatus = UtilConstString.ConfirmedStatus.WAITING;
+    private UtilConstString.ConfirmedStatus confirmStatus = UtilConstString.ConfirmedStatus.NOT_CONFIRMED;
 
     @Enumerated(EnumType.STRING)
     private UtilConstString.DeliveryStatus deliveryStatus = UtilConstString.DeliveryStatus.PENDING;

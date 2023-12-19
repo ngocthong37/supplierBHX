@@ -54,5 +54,5 @@ public class PurchaseOrder {
 
     @JsonBackReference
     @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
-    private List<ProblemDetail> problemDetails;
+    private List<Problem> problems;
 }

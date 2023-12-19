@@ -20,6 +20,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -136,30 +137,41 @@ public class PurchaseOrderService {
 
     public Page<PurchaseOrder> filterPurchaseOrders(
             String accountId,
-            List<String> keywords,
+            String keywords,
             LocalDate from,
             LocalDate to,
-            List<String> confirmStatuses,
-            List<String> deliveryStatuses,
+            String status,
             List<Integer> warehouseIds,
             List<Integer> employeeIds,
             List<Integer> supplierIds,
-            String sort,
             Pageable pageable) {
         List<PurchaseOrder> purchaseOrders = orderRepository.findAll();
-        if (keywords != null && !keywords.isEmpty()){
+
+        if (keywords != null && !keywords.isEmpty()) {
             purchaseOrders = purchaseOrders
                     .stream()
-                    .filter(c -> keywords
-                            .stream()
-                            .anyMatch(k -> c.getSupplier().getSupplierName().toLowerCase().contains(k.toLowerCase()) ||
-                                    c.getSupplier().getAddress().toLowerCase().contains(k.toLowerCase()) ||
-                                    c.getSupplier().getPhoneNumber().toLowerCase().contains(k.toLowerCase()) ||
-                                    c.getDeliveryStatus().toString().toLowerCase().contains(k.toLowerCase()) ||
-                                    c.getConfirmStatus().toString().toLowerCase().contains(k.toLowerCase())
-                            )
+                    .filter(c -> c.getSupplier().getSupplierName().toLowerCase().contains(keywords.toLowerCase()) ||
+                            c.getSupplier().getAddress().toLowerCase().contains(keywords.toLowerCase()) ||
+                            c.getSupplier().getPhoneNumber().toLowerCase().contains(keywords.toLowerCase()) ||
+                            c.getDeliveryStatus().toString().toLowerCase().contains(keywords.toLowerCase()) ||
+                            c.getConfirmStatus().toString().toLowerCase().contains(keywords.toLowerCase())
                     ).toList();
         }
+
+        if (status != null && !status.isEmpty()) {
+            List<String> value = Arrays.stream(status.split(",")).toList();
+            if (!value.isEmpty()) {
+                purchaseOrders = purchaseOrders
+                        .stream()
+                        .filter(c -> value
+                                .stream()
+                                .anyMatch(s -> c.getConfirmStatus().toString().toLowerCase().contains(s.toLowerCase()))
+                        )
+                        .toList();
+            }
+
+        }
+
         if (from != null) {
             purchaseOrders = purchaseOrders
                     .stream()
@@ -172,22 +184,8 @@ public class PurchaseOrderService {
                     .filter(c -> c.getCreatedAt().before(java.sql.Date.valueOf(to)))
                     .toList();
         }
-        if (confirmStatuses != null) {
-            purchaseOrders = purchaseOrders
-                    .stream()
-                    .filter(c -> confirmStatuses
-                            .stream()
-                            .anyMatch(k -> c.getConfirmStatus().toString().toLowerCase().contains(k.toLowerCase()))
-                    ).toList();
-        }
-        if (deliveryStatuses != null) {
-            purchaseOrders = purchaseOrders
-                    .stream()
-                    .filter(c -> deliveryStatuses
-                            .stream()
-                            .anyMatch(k -> c.getDeliveryStatus().toString().toLowerCase().contains(k.toLowerCase()))
-                    ).toList();
-        }
+
+
         if (warehouseIds != null) {
             purchaseOrders = purchaseOrders
                     .stream()
@@ -258,5 +256,15 @@ public class PurchaseOrderService {
         }*/
         Page<PurchaseOrder> purchaseOrderPage = purchaseOrders.stream().collect(Collectors.collectingAndThen(Collectors.toList(), page -> new PageImpl(page, pageable, page.size())));
         return purchaseOrderPage;
+    }
+
+    public PurchaseOrder updateStatusForOrder(Integer id, String status) {
+        Optional<PurchaseOrder> purchaseOrderOptional = orderRepository.findById(id);
+        if (purchaseOrderOptional.isPresent()) {
+            PurchaseOrder updatePurchaseOrder = purchaseOrderOptional.get();
+            updatePurchaseOrder.setConfirmStatus(UtilConstString.ConfirmedStatus.valueOf(status));
+            return orderRepository.save(updatePurchaseOrder);
+        }
+        return null;
     }
 }
