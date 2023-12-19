@@ -1,5 +1,6 @@
 package com.supplierBHX.entity;
 
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,17 +12,14 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class WarehouseDelivery {
+public class ProductImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    private Integer number;
+    private String imageUrl;
 
     @ManyToOne
-    @JoinColumn(name = "supply_capacity_id")
-    private SupplyCapacity supplyCapacity;
-
-    private String address;
+    @JoinColumn(name = "quotation_id")
+    private Quotation quotation;
 
 }

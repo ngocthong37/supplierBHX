@@ -17,8 +17,9 @@ import java.time.LocalDate;
 @Setter
 public class RatingFeedbackDTO {
     private Integer id;
-    private String paymentStatus;
+    private String responseStatus;
     private String feedBackFromSup;
+    private String feedBackFromBHX;
     private LocalDate createdAt;
     private Integer ratingProductId;
     private Integer accountId;

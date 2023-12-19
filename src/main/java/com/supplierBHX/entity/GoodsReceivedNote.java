@@ -1,6 +1,9 @@
 package com.supplierBHX.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,11 +27,14 @@ public class GoodsReceivedNote {
     private String ratingDelivery;
     private Integer employeeId;
 
-//    @OneToMany(mappedBy = "goodsReceivedNote")
-//    private List<PurchaseOrder> purchaseOrders;
+    @OneToOne
+    @JoinColumn(name = "purchaseOrder_id")
+    private PurchaseOrder purchaseOrder;
 
-    @OneToMany(mappedBy = "goodsReceivedNote")
-    private List<GRNDetail> grnDetails;
+    @JsonBackReference(value = "supplier-goodsReceivedNote")
+    @ManyToOne
+    @JoinColumn(name = "supplier_id")
+    private Supplier supplier;
 
 
 }

@@ -30,6 +30,10 @@ public class RatingFeedbackController {
     ResponseEntity<ResponseObject> findById(@PathVariable Integer id){
             return ratingFeedbackService.findById(id);
     }
+    @GetMapping("/findByRatingProductId/{ratingProductId}")
+    ResponseEntity<ResponseObject> findByRatingProductId(@PathVariable Integer ratingProductId){
+        return ratingFeedbackService.findByRatingProductId(ratingProductId);
+    }
     @PostMapping("/insert")
     ResponseEntity<ResponseObject> insert(@RequestBody @Validated RatingFeedback ratingFeedback, BindingResult result){
         if (!result.hasErrors()){

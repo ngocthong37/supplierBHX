@@ -23,7 +23,7 @@ public class Notification {
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
 
-    @JsonBackReference
+    @JsonBackReference(value = "account-notification")
     @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;

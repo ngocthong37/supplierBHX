@@ -1,7 +1,10 @@
 package com.supplierBHX.service;
 
+import com.supplierBHX.Enum.PaymentInformationType;
 import com.supplierBHX.dto.InvoiceDTO;
+import com.supplierBHX.dto.PaymentInformationDTO;
 import com.supplierBHX.dto.RatingProductDTO;
+import com.supplierBHX.entity.PaymentInformation;
 import com.supplierBHX.entity.PaymentResponse;
 import com.supplierBHX.entity.RatingProduct;
 import com.supplierBHX.entity.ResponseObject;
@@ -17,9 +20,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,7 +38,7 @@ public class RatingProductService {
         List<RatingProduct> ratingProductList = new ArrayList<RatingProduct>();
         ratingProductList = ratingProductRepository.findAll();
         if (!ratingProductList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", ratingProductList));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", ratingProductList.stream().map(ratingProduct -> modelMapper.map(ratingProduct, RatingProductDTO.class)).toList()));
         }
         else {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
@@ -72,8 +75,70 @@ public class RatingProductService {
         if (ratingProduct.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", ratingProduct.stream().map(ratingProduct1 -> modelMapper.map(ratingProduct1, RatingProductDTO.class)).collect(Collectors.toList())));
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseObject("Not found", "Not found", ""));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
         }
 
     }
+
+    public ResponseEntity<ResponseObject> getFilteredRatingProduct(Pageable pageable, Map<String, Object> filters) {
+        Page<RatingProduct> ratingProductPage;
+
+        if (filters != null && !filters.isEmpty()) {
+            Map<String, Object> convertedFilters = convertFilters(filters);
+            ratingProductPage = ratingProductRepository.findByFilters(
+                    (String) convertedFilters.get("search"),
+                    (Integer) convertedFilters.get("month"),
+                    (Integer) convertedFilters.get("year"),
+                    (Integer) convertedFilters.get("supplierId"),
+                    (Float) convertedFilters.get("minRatingScore"),
+                    (Float) convertedFilters.get("maxRatingScore"),
+                    pageable);
+        } else {
+            ratingProductPage = ratingProductRepository.findAll(pageable);
+        }
+
+        if (ratingProductPage.hasContent()) {
+            ResponseObject responseObject = new ResponseObject("OK", "Successfully", ratingProductPage.getContent().stream().map(ratingProduct -> modelMapper.map(ratingProduct, RatingProductDTO.class)).toList());
+            responseObject.setTotalPages(ratingProductPage.getTotalPages()); // Set total pages
+            return ResponseEntity.status(HttpStatus.OK).body(responseObject);
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
+        }
+    }
+    private Map<String, Object> convertFilters(Map<String, Object> filters) {
+        Map<String, Object> convertedFilters = new HashMap<>();
+        if (filters.containsKey("search")) {
+            String paymentInformationNumber = (String) filters.get("search");
+            convertedFilters.put("search", paymentInformationNumber);
+        }
+
+        if (filters.containsKey("month")) {
+            String monthString = (String) filters.get("month");
+            Integer month = Integer.parseInt(monthString);
+            convertedFilters.put("month", month);
+        }
+
+        if (filters.containsKey("year")) {
+            String yearString = (String) filters.get("year");
+            Integer year = Integer.parseInt(yearString);
+            convertedFilters.put("year", year);
+        }
+
+        if (filters.containsKey("minRatingScore")) {
+            String minRatingScoreString = (String) filters.get("minRatingScore");
+            Float minRatingScore = Float.parseFloat(minRatingScoreString);
+            convertedFilters.put("minRatingScore", minRatingScore);
+        }
+        if (filters.containsKey("maxRatingScore")) {
+            String maxRatingScoreString = (String) filters.get("maxRatingScore");
+            Float maxRatingScore = Float.parseFloat(maxRatingScoreString);
+            convertedFilters.put("maxRatingScore", maxRatingScore);
+        }
+        String supplierIdString = (String) filters.get("supplierId");
+        Integer supplierId = Integer.parseInt(supplierIdString);
+        convertedFilters.put("supplierId", supplierId);
+
+        return convertedFilters;
+    }
+
 }

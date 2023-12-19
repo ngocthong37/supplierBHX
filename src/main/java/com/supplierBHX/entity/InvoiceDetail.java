@@ -16,7 +16,7 @@ public class InvoiceDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private Integer quantity;
-    private Integer price;
+    private Double price;
 
     @ManyToOne
     @JoinColumn(name = "invoice_id")

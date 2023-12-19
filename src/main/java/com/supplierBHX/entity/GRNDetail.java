@@ -1,5 +1,6 @@
 package com.supplierBHX.entity;
 
+import com.supplierBHX.Enum.QualityProduct;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,21 +16,21 @@ public class GRNDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Integer productId;
-    private Integer qualityProduct;
-    private Integer statusProduct;
+    @Enumerated(EnumType.STRING)
+    private QualityProduct qualityProduct;
     private Double price;
     private Integer numberInPO;
     private Integer numberReceived;
     private Integer numberDamage;
     private Integer numberMissing;
 
+
     @ManyToOne
     @JoinColumn(name = "grn_id")
     private GoodsReceivedNote goodsReceivedNote;
 
-    @OneToOne
-    @JoinColumn(name = "purchaseOrderDetail_id")
-    private PurchaseOrderDetail purchaseOrderDetail;
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
 
 }

@@ -7,7 +7,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -76,6 +78,11 @@ public class SupplierController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         return supplierService.getFilteredSupplyCapacity(pageable, filters);
+    }
+
+    @PostMapping("quotation/uploadImage")
+    List<String> saveImage(@RequestParam("namePath") String namePath, @RequestParam("file") List<MultipartFile> files, @RequestParam("quotationId") Integer quotationId) {
+        return supplierService.uploadImage(files, namePath, quotationId);
     }
 
 }

@@ -3,10 +3,14 @@ package com.supplierBHX.controller;
 import com.supplierBHX.entity.ResponseObject;
 import com.supplierBHX.service.RatingProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api/v1/ratingProduct")
@@ -42,6 +46,17 @@ public class RatingProductController {
     @GetMapping("/findById/{id}")
     ResponseEntity<ResponseObject> findById(@PathVariable Integer id) {
         return ratingProductService.findById(id);
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<ResponseObject> getFilteredRatingFeedback(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) Map<String, Object> filters
+    ) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("ratingDate").descending());
+        return ratingProductService.getFilteredRatingProduct(pageable, filters);
     }
 
 }
