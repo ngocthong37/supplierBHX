@@ -85,4 +85,9 @@ public class SupplierController {
         return supplierService.uploadImage(files, namePath, quotationId);
     }
 
+    @GetMapping("supplier/findById/{id}")
+    ResponseEntity<ResponseObject> findSupplierById(@PathVariable Integer id) {
+        return supplierService.findSupplierById(id);
+    }
+
 }

@@ -18,4 +18,5 @@ public class AuthenticationResponse {
   private Integer accountId;
   private String userName;
   private Integer supplierId;
+  private String name;
 }
