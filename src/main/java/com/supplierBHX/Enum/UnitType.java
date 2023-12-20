@@ -1,6 +1,8 @@
 package com.supplierBHX.Enum;
 
 public enum UnitType {
-    unit,
-    kilogram
+    piece,
+    kilogram,
+    gram,
+    tonne,
 }

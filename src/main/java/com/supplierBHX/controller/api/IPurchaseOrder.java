@@ -148,19 +148,17 @@ public interface IPurchaseOrder {
             @Parameter(description = "Input any keywords for searching the list of purchase orders")
             @RequestParam(value = "accountId", required = false) String accountId,
             @RequestParam(value = "keywords", required = false) String keywords,
-            @RequestParam(name = "from", required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-            @RequestParam(name = "to", required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+            @RequestParam(name = "from", required = false)String from,
+            @RequestParam(name = "to", required = false)String to,
             @ApiParam(
                     allowableValues = "NOT_CONFIRMED, RECEIVED, APPROVED, REJECTED, DELIVERING, COMPLETED",
                     example = "NOT_CONFIRMED, RECEIVED, APPROVED, REJECTED, DELIVERING, COMPLETED",
                     defaultValue = "COMPLETED",
                     type = "String")
             @RequestParam(name = "status", required = false) String status,
-            @RequestParam(name = "warehouseId", required = false) List<Integer> warehouseIds,
-            @RequestParam(name = "employeeId", required = false) List<Integer> employeeIds,
-            @RequestParam(name = "supplierId", required = false) List<Integer> supplierIds,
+//            @RequestParam(name = "warehouseId", required = false) List<Integer> warehouseIds,
+//            @RequestParam(name = "employeeId", required = false) List<Integer> employeeIds,
+            @RequestParam(name = "supplierId", required = true) Integer supplierId,
 //            @RequestParam(name = "sort", required = false, defaultValue = "id,asc") String sort,
             @RequestParam(name = "page", required = false, defaultValue = "1") int page,
             @RequestParam(name = "size", required = false, defaultValue = "10") int size
@@ -178,13 +176,13 @@ public interface IPurchaseOrder {
             @ApiResponse(responseCode = "401", description = "Unauthorized, missing or invalid JWT", content = @Content),
             @ApiResponse(responseCode = "403", description = "Access denied, do not have permission to access this resource", content = @Content),
     })
-    @PatchMapping("/updateStatusForOrder")
+    @PutMapping("/updateStatusForOrder")
     ResponseEntity<PurchaseOrder> updateStatusForOrder(
             @RequestParam Integer id,
             @RequestParam
-            @ApiParam(allowableValues = "NOT_CONFIRMED, RECEIVED, DELIVERING, COMPLETED",
-                    example = "NOT_CONFIRMED, RECEIVED, DELIVERING, COMPLETED",
-                    defaultValue = "RECEIVED",
-                    type = "String")
+//            @ApiParam(allowableValues = "NOT_CONFIRMED, APPROVED, RECEIVED, DELIVERING, COMPLETED, REJECTED, EXPIRED",
+//                    example = "NOT_CONFIRMED, RECEIVED, APPROVED, DELIVERING, COMPLETED, REJECTED, EXPIRED",
+//                    defaultValue = "RECEIVED",
+//                    type = "String")
             String status);
 }
