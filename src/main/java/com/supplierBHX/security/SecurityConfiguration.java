@@ -50,7 +50,8 @@ public class SecurityConfiguration {
                                 "/api/v1/invoiceDetail/**",
                                 "/api/v1/ratingProduct/**",
                                 "/api/v1/ratingImage/**",
-                                "/api/v1/ratingFeedback/**"
+                                "/api/v1/ratingFeedback/**",
+                                "/api/v1/problem/**"
                         ).permitAll()
                         .requestMatchers("/api/v1/supply-capacity/**").hasAnyRole(ADMIN.name(), MANAGER.name())
                         .requestMatchers("/api/v1/supplier/**").hasAnyRole(ADMIN.name(), MANAGER.name())

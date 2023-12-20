@@ -91,19 +91,19 @@ public class PurchaseOrderController implements IPurchaseOrder {
     public ResponseEntity<Page<PurchaseOrder>> filterPurchaseOrders(
             String accountId,
             String keywords,
-            LocalDate from,
-            LocalDate to,
+            String from,
+            String to,
             String status,
-            List<Integer> warehouseIds,
-            List<Integer> employeeIds,
-            List<Integer> supplierIds,
+//            List<Integer> warehouseIds,
+//            List<Integer> employeeIds,
+            Integer supplierId,
             // String sort,
             int page,
             int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<PurchaseOrder> filteredPurchaseOrders = orderService.filterPurchaseOrders( accountId,
-                keywords, from, to, status,
-                warehouseIds, employeeIds, supplierIds, pageable
+                keywords, from, to, status
+                ,supplierId , pageable
         );
         return ResponseEntity
                 .status(filteredPurchaseOrders.stream().findAny().isPresent() ? HttpStatus.OK : HttpStatus.NOT_FOUND)

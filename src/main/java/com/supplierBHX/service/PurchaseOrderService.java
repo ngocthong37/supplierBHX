@@ -138,14 +138,22 @@ public class PurchaseOrderService {
     public Page<PurchaseOrder> filterPurchaseOrders(
             String accountId,
             String keywords,
-            LocalDate from,
-            LocalDate to,
+            String from,
+            String to,
             String status,
-            List<Integer> warehouseIds,
-            List<Integer> employeeIds,
-            List<Integer> supplierIds,
+//            List<Integer> warehouseIds,
+//            List<Integer> employeeIds,
+           Integer supplierId,
             Pageable pageable) {
         List<PurchaseOrder> purchaseOrders = orderRepository.findAll();
+
+        if(supplierId != null){
+            purchaseOrders = purchaseOrders
+                    .stream()
+                    .filter(c -> c.getSupplier().getId().equals(supplierId))
+                    .toList();
+        }
+
 
         if (keywords != null && !keywords.isEmpty()) {
             purchaseOrders = purchaseOrders
@@ -186,30 +194,30 @@ public class PurchaseOrderService {
         }
 
 
-        if (warehouseIds != null) {
-            purchaseOrders = purchaseOrders
-                    .stream()
-                    .filter(c -> warehouseIds
-                            .stream()
-                            .allMatch(k -> c.getWarehouseId().equals(k))
-                    ).toList();
-        }
-        if (employeeIds != null) {
-            purchaseOrders = purchaseOrders
-                    .stream()
-                    .filter(c -> employeeIds
-                            .stream()
-                            .allMatch(k -> c.getEmployeeId().equals(k))
-                    ).toList();
-        }
-        if (supplierIds != null) {
-            purchaseOrders = purchaseOrders
-                    .stream()
-                    .filter(c -> supplierIds
-                            .stream()
-                            .allMatch(k -> c.getSupplier().getId().equals(k))
-                    ).toList();
-        }
+//        if (warehouseIds != null) {
+//            purchaseOrders = purchaseOrders
+//                    .stream()
+//                    .filter(c -> warehouseIds
+//                            .stream()
+//                            .allMatch(k -> c.getWarehouseId().equals(k))
+//                    ).toList();
+//        }
+//        if (employeeIds != null) {
+//            purchaseOrders = purchaseOrders
+//                    .stream()
+//                    .filter(c -> employeeIds
+//                            .stream()
+//                            .allMatch(k -> c.getEmployeeId().equals(k))
+//                    ).toList();
+//        }
+//        if (supplierIds != null) {
+//            purchaseOrders = purchaseOrders
+//                    .stream()
+//                    .filter(c -> supplierIds
+//                            .stream()
+//                            .allMatch(k -> c.getSupplier().getId().equals(k))
+//                    ).toList();
+//        }
         /*if (sort != null) {
             purchaseOrders = purchaseOrders
                     .stream()

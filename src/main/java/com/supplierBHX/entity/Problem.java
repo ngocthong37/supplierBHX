@@ -28,6 +28,7 @@ public class Problem {
     private Integer status;
     private String solution;
     private Integer employeeId;
+    @Enumerated(EnumType.STRING)
     private UtilConstString.ProblemType problemType;
 
     @JsonBackReference(value = "supplier-problem")
