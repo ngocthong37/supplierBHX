@@ -19,6 +19,7 @@ public class SupplierController {
     @Autowired
     SupplierService supplierService;
 
+
     @GetMapping("quotation/findAll")
     ResponseEntity<ResponseObject> findAllQuotation() {
         return supplierService.findAllQuotation();
@@ -88,6 +89,11 @@ public class SupplierController {
     @PutMapping("quotation/delete/{quotationId}")
     ResponseEntity<Object>  deleteQuotation(@PathVariable Integer quotationId) {
         return supplierService.deleteQuotation(quotationId);
+    }
+
+    @GetMapping("supplier/findById/{id}")
+    ResponseEntity<ResponseObject> findSupplierById(@PathVariable Integer id) {
+        return supplierService.findSupplierById(id);
     }
 
 }
