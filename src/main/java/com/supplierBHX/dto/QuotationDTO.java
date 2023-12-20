@@ -31,4 +31,6 @@ public class QuotationDTO {
     private LocalDate dateConfirmed;
     private String defaultImageUrl;
     private List<ZoneDeliveryDTO> zoneDeliveries;
+    private List<ProductImageUrlDTO> productImageUrlList;
+    private String reasonDecline;
 }

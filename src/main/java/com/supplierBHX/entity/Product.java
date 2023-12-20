@@ -24,8 +24,8 @@ public class Product {
     private String name;
 
     @JsonBackReference(value ="supplyCapacity-product")
-    @OneToOne(mappedBy = "product")
-    private SupplyCapacity supplyCapacity;
+    @OneToMany(mappedBy = "product")
+    private List<SupplyCapacity> supplyCapacity;
 
     @JsonManagedReference(value ="paymentResponse-product")
     @JsonIgnore

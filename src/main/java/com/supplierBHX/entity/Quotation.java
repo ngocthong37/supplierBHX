@@ -39,6 +39,8 @@ public class Quotation {
     private Timestamp updatedAt;
     private String productName;
     private String defaultImageUrl;
+    private String reasonDecline;
+    private boolean isRemove;
 
     @JsonBackReference(value = "quotation-supplier")
     @ManyToOne
@@ -50,8 +52,6 @@ public class Quotation {
     @JoinColumn(name = "account_id")
     private Account account;
 
-
-    @JsonIgnore
     @OneToMany(mappedBy = "quotation",  cascade = CascadeType.ALL)
     private List<ZoneDelivery> zoneDeliveryList;
 

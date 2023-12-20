@@ -34,9 +34,9 @@ public class SupplierController {
         return supplierService.findSupplyCapacityById(id);
     }
 
-    @GetMapping("supply-capacity/findAll")
-    ResponseEntity<ResponseObject> findAllSupplyCapacity() {
-        return supplierService.findAllSupplyCapacity();
+    @GetMapping("supply-capacity/findToCompare/{productId}")
+    ResponseEntity<ResponseObject> findToCompare(@PathVariable Integer productId) {
+        return supplierService.findToCompareSupplyCapacity(productId);
     }
 
 
@@ -85,9 +85,9 @@ public class SupplierController {
         return supplierService.uploadImage(files, namePath, quotationId);
     }
 
-    @GetMapping("supplier/findById/{id}")
-    ResponseEntity<ResponseObject> findSupplierById(@PathVariable Integer id) {
-        return supplierService.findSupplierById(id);
+    @PutMapping("quotation/delete/{quotationId}")
+    ResponseEntity<Object>  deleteQuotation(@PathVariable Integer quotationId) {
+        return supplierService.deleteQuotation(quotationId);
     }
 
 }

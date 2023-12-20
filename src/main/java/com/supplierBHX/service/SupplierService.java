@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.supplierBHX.Enum.StatusType;
 import com.supplierBHX.Enum.UnitType;
-import com.supplierBHX.dto.*;
+import com.supplierBHX.dto.ProductImageUrlDTO;
+import com.supplierBHX.dto.QuotationDTO;
+import com.supplierBHX.dto.SupplyCapacityDTO;
+import com.supplierBHX.dto.ZoneDeliveryDTO;
 import com.supplierBHX.entity.*;
 import com.supplierBHX.repository.*;
 import org.modelmapper.ModelMapper;
@@ -48,6 +51,67 @@ public class SupplierService {
 
     @Autowired
     private StorageService storageService;
+    String htmlContent = "<!DOCTYPE html>\n" +
+            "<html>\n" +
+            "<head>\n" +
+            "  <style>\n" +
+            "    /* CSS styles */\n" +
+            "    body {\n" +
+            "      font-family: Arial, sans-serif;\n" +
+            "      background-color: #4abdac; /* Màu xanh da trời */\n" +
+            "      margin: 0;\n" +
+            "      padding: 20px;\n" +
+            "    }\n" +
+            "\n" +
+            "    .container {\n" +
+            "      max-width: 600px;\n" +
+            "      margin: 0 auto;\n" +
+            "      background-color: #fff;\n" +
+            "      padding: 30px;\n" +
+            "      border-radius: 8px;\n" +
+            "      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\n" +
+            "    }\n" +
+            "\n" +
+            "    h1 {\n" +
+            "      color: #333;\n" +
+            "    }\n" +
+            "\n" +
+            "    .info {\n" +
+            "      margin-bottom: 20px;\n" +
+            "    }\n" +
+            "\n" +
+            "    .info p {\n" +
+            "      margin: 5px 0;\n" +
+            "    }\n" +
+            "\n" +
+            "    .logo {\n" +
+            "      text-align: center;\n" +
+            "      margin-bottom: 20px;\n" +
+            "    }\n" +
+            "\n" +
+            "    /* More CSS styles */\n" +
+            "  </style>\n" +
+            "</head>\n" +
+            "<body>\n" +
+            "  <div class=\"container\">\n" +
+            "    <div class=\"logo\">\n" +
+            "      <img src=\"https://th.bing.com/th/id/OIP.7F3b1F_6WgxFdN30AcR9mQHaFb?rs=1&pid=ImgDetMain\" alt=\"Logo\" style=\"max-width: 150px;\">\n" +
+            "    </div>\n" +
+            "    <h1>Chào Nhà cung cấp A,</h1>\n" +
+            "    <p>Thông tin chào hàng với sản phẩm A đã được chấp nhận lúc 23h ngày 19/12/2023</p>\n" +
+            "    \n" +
+            "    <div class=\"info\">\n" +
+            "      <p><strong>Chi tiết thông tin chào hàng gồm:</strong></p>\n" +
+            "      <p><strong>Tên sản phẩm:</strong> A</p>\n" +
+            "      <p><strong>Số lượng giao/tháng:</strong> 10000</p>\n" +
+            "      <p><strong>Giá:</strong> 1000 VND</p>\n" +
+            "      <p><strong>Mô tả sản phẩm:</strong> Sản phẩm tốt</p>\n" +
+            "      <p><strong>Ngày bắt đầu giao:</strong> 10/1/2023</p>\n" +
+            "      <p><strong>Ngày kết thúc giao:</strong> 10/1/2023</p>\n" +
+            "    </div>\n" +
+            "  </div>\n" +
+            "</body>\n" +
+            "</html>";
 
     @Autowired
     private SupplierRepository supplierRepository;
@@ -56,14 +120,26 @@ public class SupplierService {
     public List<String> uploadImage(List<MultipartFile> files, String namePath, Integer quotationId) {
         List<String> imageUrls;
 
-
         imageUrls = storageService.uploadImages(files, namePath);
+        List<ProductImage> productImageList = productImageRepository.findByQuotationId(quotationId);
 
         for (int i = 0; i < imageUrls.size(); i++) {
-            quotationRepository.updateImage(imageUrls.get(i), quotationId);
+            quotationRepository.updateImage(imageUrls.get(i), quotationId, productImageList.get(i).getId());
         }
         quotationRepository.updateDefaultImage(imageUrls.get(0), quotationId);
         return imageUrls;
+    }
+
+    public ResponseEntity<Object> deleteQuotation(Integer quotationId) {
+        var res = quotationRepository.deleteQuotation(quotationId);
+        if (res > 0) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseObject("OK", "Successfully", ""));
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseObject("ERROR", "An error occurred", ""));
+        }
     }
 
 
@@ -83,11 +159,10 @@ public class SupplierService {
                     jsonObjectQuotation.get("number").asDouble() : 1;
             String unit = jsonObjectQuotation.get("unit") != null ?
                     jsonObjectQuotation.get("unit").asText() : "";
-            String beginDate = jsonObjectQuotation.get("beginDate") != null ?
-                    jsonObjectQuotation.get("beginDate").asText() : "";
-            String endDate = jsonObjectQuotation.get("endDate") != null ?
-                    jsonObjectQuotation.get("endDate").asText() : "";
-            String description = jsonObjectQuotation.get("description") != null ?
+            String beginDate = jsonObjectQuotation.has("beginDate") && !jsonObjectQuotation.get("beginDate").asText().isEmpty() ?
+                    jsonObjectQuotation.get("beginDate").asText() : null;
+            String endDate = jsonObjectQuotation.has("endDate") && !jsonObjectQuotation.get("endDate").asText().isEmpty() ?
+                    jsonObjectQuotation.get("endDate").asText() : null;            String description = jsonObjectQuotation.get("description") != null ?
                     jsonObjectQuotation.get("description").asText() : "";
             Integer accountId = jsonObjectQuotation.get("accountId") != null ?
                     jsonObjectQuotation.get("accountId").asInt() : 1;
@@ -99,8 +174,15 @@ public class SupplierService {
             Quotation quotation = new Quotation();
             quotation.setProductName(productName);
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate beginParsedDate = LocalDate.parse(beginDate, dateFormatter);
-            LocalDate endParsedDate = LocalDate.parse(endDate, dateFormatter);
+            LocalDate beginParsedDate;
+            LocalDate endParsedDate;
+            if (beginDate != null && endDate != null) {
+                beginParsedDate = LocalDate.parse(beginDate, dateFormatter);
+                endParsedDate = LocalDate.parse(endDate, dateFormatter);
+            } else {
+                 beginParsedDate = null;
+                 endParsedDate = null;
+            }
             Supplier supplier = new Supplier();
             supplier.setId(supplierId);
             quotation.setSupplier(supplier);
@@ -184,7 +266,16 @@ public class SupplierService {
                     if (accountOptional.isPresent()) {
                         supplierEmail = accountOptional.get().getEmail();
                     }
-                    emailService.sendMail(supplierEmail, cc, "Thông tin chào hàng của bạn đã được duyệt", "Đây là email test");
+                    Map<String, Object> model = new HashMap<>();
+                    model.put("name", quotation.getSupplier().getSupplierName());
+
+                    model.put("price", quotation.getPrice() + " VND");
+                    model.put("number", quotation.getNumber());
+                    model.put("beginDate", quotation.getBeginDate());
+                    model.put("endDate", quotation.getEndDate());
+                    model.put("description", quotation.getDescription());
+                    model.put("confirmedDate", quotation.getDateConfirmed().toString());
+                    emailService.sendMail(supplierEmail, cc, "Thông tin chào hàng của bạn đã được duyệt", model);
                     return ResponseEntity.status(HttpStatus.OK)
                             .body(new ResponseObject("OK", "Successfully", ""));
                 }
@@ -220,11 +311,14 @@ public class SupplierService {
                     jsonObjectRequest.get("endDate").asText() : "";
             Integer accountId = jsonObjectRequest.get("accountId") != null ?
                     jsonObjectRequest.get("accountId").asInt() : 1;
+            String warehouseAddress = jsonObjectRequest.get("warehouseAddress") != null ?
+                    jsonObjectRequest.get("warehouseAddress").asText() : "";
+            String reasonChange = jsonObjectRequest.get("reasonChange") != null ?
+                    jsonObjectRequest.get("reasonChange").asText() : null;
 
             SupplyCapacity supplyCapacity = new SupplyCapacity();
             Product product = new Product();
             product.setId(productId);
-
             supplyCapacity.setProduct(product);
 
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -237,6 +331,7 @@ public class SupplierService {
             supplyCapacity.setUnitType(UnitType.valueOf(unit));
             supplyCapacity.setBeginDate(beginParsedDate);
             supplyCapacity.setEndDate(endParsedDate);
+            supplyCapacity.setImageUrlDefault("https://th.bing.com/th/id/R.4f4d55e784bd952b663e87cf830971f5?rik=xSTuHFCQi6%2bj9g&pid=ImgRaw&r=0");
 
             Account account = new Account();
             account.setId(accountId);
@@ -247,7 +342,8 @@ public class SupplierService {
             Timestamp updateAt = Timestamp.valueOf(now);
             supplyCapacity.setUpdatedAt(updateAt);
             supplyCapacity.setStatus(StatusType.valueOf("PROCESSING"));
-
+            supplyCapacity.setWarehouseAddress(warehouseAddress);
+            supplyCapacity.setReasonChange(reasonChange);
             SupplyCapacity saveSupplyCapacity = supplyCapacityRepository.save(supplyCapacity);
 
             if (saveSupplyCapacity.getId() != null) {
@@ -288,28 +384,37 @@ public class SupplierService {
                     (List<StatusType>) convertedFilters.get("statusList"),
                     (LocalDate) convertedFilters.get("from"),
                     (LocalDate) convertedFilters.get("to"),
+                    (String) convertedFilters.get("search"),
                     pageable);
         } else {
-            quotationPage = quotationRepository.findAll(pageable);
+            quotationPage = quotationRepository.findAllWithCondition(pageable);
+            System.out.println("content: " + quotationPage.getContent());
         }
-        return quotationPage.hasContent() ?
-                ResponseEntity.ok(new ResponseObject("OK", "Successfully", quotationPage.getContent().stream().map(
-                        quotation -> {
-                            QuotationDTO quotationDTO = modelMapper.map(quotation, QuotationDTO.class);
-                            List<ZoneDeliveryDTO> zoneDeliveryDTOs = quotation.getZoneDeliveryList().stream()
-                                    .map(zoneDelivery -> modelMapper.map(zoneDelivery, ZoneDeliveryDTO.class))
-                                    .collect(Collectors.toList());
-                            quotationDTO.setZoneDeliveries(zoneDeliveryDTOs);
-                            return quotationDTO;
-                        }
-                ).collect(Collectors.toList())))
-                :
-                ResponseEntity.ok(new ResponseObject("Not found", "Not found", ""));
+        if (quotationPage.hasContent()) {
+            System.out.println("content: " + quotationPage.getContent());
+            ResponseObject responseObject = new ResponseObject("OK", "Successfully", quotationPage.getContent().stream().map(
+                    quotation -> {
+                        QuotationDTO quotationDTO = modelMapper.map(quotation, QuotationDTO.class);
+                        List<ZoneDeliveryDTO> zoneDeliveryDTOs = quotation.getZoneDeliveryList().stream()
+                                .map(zoneDelivery -> modelMapper.map(zoneDelivery, ZoneDeliveryDTO.class))
+                                .collect(Collectors.toList());
+                        List<ProductImageUrlDTO> productImageUrlDTOS = quotation.getProductImageList().stream()
+                                .map(productImage -> modelMapper.map(productImage, ProductImageUrlDTO.class))
+                                .collect(Collectors.toList());
+                        quotationDTO.setProductImageUrlList(productImageUrlDTOS);
+                        quotationDTO.setZoneDeliveries(zoneDeliveryDTOs);
+                        return quotationDTO;
+                    }
+            ).collect(Collectors.toList()));
+            responseObject.setTotalPages(quotationPage.getTotalPages());
+            return ResponseEntity.status(HttpStatus.OK).body(responseObject);
+        }
+        return ResponseEntity.ok(new ResponseObject("Not found", "Not found", ""));
     }
 
     public ResponseEntity<ResponseObject> getFilteredSupplyCapacity(Pageable pageable, Map<String, Object> filters) {
         Page<SupplyCapacity> supplyCapacityPage;
-        if (filters != null && !filters.isEmpty()) {
+        if (filters != null && !filters.isEmpty() && filters.size() != 3) {
             Map<String, Object> convertedFilters = convertFilters(filters);
             supplyCapacityPage = supplyCapacityRepository.findByFilters(
                     (List<StatusType>) convertedFilters.get("statusList"),
@@ -318,15 +423,18 @@ public class SupplierService {
                     (String) convertedFilters.get("search"),
                     pageable);
         } else {
-            supplyCapacityPage = supplyCapacityRepository.findAll(pageable);
+            supplyCapacityPage = supplyCapacityRepository.findLatestByProductId(pageable);
         }
-        return supplyCapacityPage.hasContent() ?
-                ResponseEntity.ok(new ResponseObject("OK", "Successfully", supplyCapacityPage.getContent().stream().map(
-                        supplyCapacity -> modelMapper.map(
-                                supplyCapacity, SupplyCapacityDTO.class
-                        )
-                ).toList())) :
-                ResponseEntity.ok(new ResponseObject("Not found", "Not found", ""));
+        if (supplyCapacityPage.hasContent()) {
+            ResponseObject responseObject = new  ResponseObject("OK", "Successfully", supplyCapacityPage.getContent().stream().map(
+                    supplyCapacity -> modelMapper.map(
+                            supplyCapacity, SupplyCapacityDTO.class
+                    )
+            ).toList());
+            responseObject.setTotalPages(supplyCapacityPage.getTotalPages());
+            return ResponseEntity.status(HttpStatus.OK).body(responseObject);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
     }
 
     public ResponseEntity<ResponseObject> findQuotationById(Integer id) {
@@ -350,10 +458,10 @@ public class SupplierService {
         }
     }
 
-    public ResponseEntity<ResponseObject> findAllSupplyCapacity() {
+    public ResponseEntity<ResponseObject> findToCompareSupplyCapacity(Integer productId) {
         List<SupplyCapacityDTO> supplyCapacityListDTO = null;
         try {
-            supplyCapacityListDTO = supplyCapacityRepository.findAll().stream().map(
+            supplyCapacityListDTO = supplyCapacityRepository.findToCompare(productId).stream().map(
                     supplyCapacity -> modelMapper.map(
                             supplyCapacity, SupplyCapacityDTO.class
                     )
@@ -398,7 +506,7 @@ public class SupplierService {
                     if (accountOptional.isPresent()) {
                         supplierEmail = accountOptional.get().getEmail();
                     }
-                    emailService.sendMail(supplierEmail, cc, "Thông tin chào hàng của bạn đã được duyệt", "Đây là email test");
+//                    emailService.sendMail(supplierEmail, cc, "Thông tin chào hàng của bạn đã được duyệt", "Đây là email test");
                     return ResponseEntity.status(HttpStatus.OK)
                             .body(new ResponseObject("OK", "Successfully", ""));
                 }
