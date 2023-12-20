@@ -19,6 +19,7 @@ public class SupplierController {
     @Autowired
     SupplierService supplierService;
 
+
     @GetMapping("quotation/findAll")
     ResponseEntity<ResponseObject> findAllQuotation() {
         return supplierService.findAllQuotation();
@@ -34,9 +35,9 @@ public class SupplierController {
         return supplierService.findSupplyCapacityById(id);
     }
 
-    @GetMapping("supply-capacity/findAll")
-    ResponseEntity<ResponseObject> findAllSupplyCapacity() {
-        return supplierService.findAllSupplyCapacity();
+    @GetMapping("supply-capacity/findToCompare/{productId}")
+    ResponseEntity<ResponseObject> findToCompare(@PathVariable Integer productId) {
+        return supplierService.findToCompareSupplyCapacity(productId);
     }
 
 
@@ -83,6 +84,16 @@ public class SupplierController {
     @PostMapping("quotation/uploadImage")
     List<String> saveImage(@RequestParam("namePath") String namePath, @RequestParam("file") List<MultipartFile> files, @RequestParam("quotationId") Integer quotationId) {
         return supplierService.uploadImage(files, namePath, quotationId);
+    }
+
+    @PutMapping("quotation/delete/{quotationId}")
+    ResponseEntity<Object>  deleteQuotation(@PathVariable Integer quotationId) {
+        return supplierService.deleteQuotation(quotationId);
+    }
+
+    @GetMapping("supplier/findById/{id}")
+    ResponseEntity<ResponseObject> findSupplierById(@PathVariable Integer id) {
+        return supplierService.findSupplierById(id);
     }
 
 }

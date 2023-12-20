@@ -14,14 +14,20 @@ import java.time.LocalDate;
 @Setter
 public class SupplyCapacityDTO {
     private Integer id;
-    private LocalDate beginDate;
+    private LocalDate beginDate;    
     private LocalDate endDate;
     private LocalDate dateConfirmed;
     private Integer employeeId;
     private Double number;
-    private Integer productId;
+    private String productName;
     private Integer accountId;
     private Integer supplierId;
+    private Integer productId;
+    private String unitType;
     private String status;
+    private String imageUrlDefault;
+    private String reasonChange;
+    private String warehouseAddress;
+    private String createdAt;
 }
 
