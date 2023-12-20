@@ -22,6 +22,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -56,8 +58,11 @@ public class AuthService {
         var savedUser = repository.save(user);
         // send account information to supplier's email
         if (savedUser.getPassword() != null) {
-            String[] cc = {"n20dccn152@student.ptithcm.edu.vn"};
-            emailService.sendMail(savedUser.getEmail(), cc, "Tài khoản truy cập website của bạn đã được tạo", "\nTên tài khoản: " + savedUser.getUsername() + "\n Pasword: " + password );
+            String[] cc = {};
+            Map<String, Object> model = new HashMap<>();
+            model.put("userName", savedUser.getUsername());
+            model.put("password", password);
+            emailService.sendMail(savedUser.getEmail(), cc, "Tài khoản truy cập website của bạn đã được tạo", model);
         }
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);

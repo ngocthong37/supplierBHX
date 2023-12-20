@@ -51,6 +51,67 @@ public class SupplierService {
 
     @Autowired
     private StorageService storageService;
+    String htmlContent = "<!DOCTYPE html>\n" +
+            "<html>\n" +
+            "<head>\n" +
+            "  <style>\n" +
+            "    /* CSS styles */\n" +
+            "    body {\n" +
+            "      font-family: Arial, sans-serif;\n" +
+            "      background-color: #4abdac; /* Màu xanh da trời */\n" +
+            "      margin: 0;\n" +
+            "      padding: 20px;\n" +
+            "    }\n" +
+            "\n" +
+            "    .container {\n" +
+            "      max-width: 600px;\n" +
+            "      margin: 0 auto;\n" +
+            "      background-color: #fff;\n" +
+            "      padding: 30px;\n" +
+            "      border-radius: 8px;\n" +
+            "      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\n" +
+            "    }\n" +
+            "\n" +
+            "    h1 {\n" +
+            "      color: #333;\n" +
+            "    }\n" +
+            "\n" +
+            "    .info {\n" +
+            "      margin-bottom: 20px;\n" +
+            "    }\n" +
+            "\n" +
+            "    .info p {\n" +
+            "      margin: 5px 0;\n" +
+            "    }\n" +
+            "\n" +
+            "    .logo {\n" +
+            "      text-align: center;\n" +
+            "      margin-bottom: 20px;\n" +
+            "    }\n" +
+            "\n" +
+            "    /* More CSS styles */\n" +
+            "  </style>\n" +
+            "</head>\n" +
+            "<body>\n" +
+            "  <div class=\"container\">\n" +
+            "    <div class=\"logo\">\n" +
+            "      <img src=\"https://th.bing.com/th/id/OIP.7F3b1F_6WgxFdN30AcR9mQHaFb?rs=1&pid=ImgDetMain\" alt=\"Logo\" style=\"max-width: 150px;\">\n" +
+            "    </div>\n" +
+            "    <h1>Chào Nhà cung cấp A,</h1>\n" +
+            "    <p>Thông tin chào hàng với sản phẩm A đã được chấp nhận lúc 23h ngày 19/12/2023</p>\n" +
+            "    \n" +
+            "    <div class=\"info\">\n" +
+            "      <p><strong>Chi tiết thông tin chào hàng gồm:</strong></p>\n" +
+            "      <p><strong>Tên sản phẩm:</strong> A</p>\n" +
+            "      <p><strong>Số lượng giao/tháng:</strong> 10000</p>\n" +
+            "      <p><strong>Giá:</strong> 1000 VND</p>\n" +
+            "      <p><strong>Mô tả sản phẩm:</strong> Sản phẩm tốt</p>\n" +
+            "      <p><strong>Ngày bắt đầu giao:</strong> 10/1/2023</p>\n" +
+            "      <p><strong>Ngày kết thúc giao:</strong> 10/1/2023</p>\n" +
+            "    </div>\n" +
+            "  </div>\n" +
+            "</body>\n" +
+            "</html>";
 
 
     public List<String> uploadImage(List<MultipartFile> files, String namePath, Integer quotationId) {
@@ -202,7 +263,16 @@ public class SupplierService {
                     if (accountOptional.isPresent()) {
                         supplierEmail = accountOptional.get().getEmail();
                     }
-                    emailService.sendMail(supplierEmail, cc, "Thông tin chào hàng của bạn đã được duyệt", "Đây là email test");
+                    Map<String, Object> model = new HashMap<>();
+                    model.put("name", quotation.getSupplier().getSupplierName());
+
+                    model.put("price", quotation.getPrice() + " VND");
+                    model.put("number", quotation.getNumber());
+                    model.put("beginDate", quotation.getBeginDate());
+                    model.put("endDate", quotation.getEndDate());
+                    model.put("description", quotation.getDescription());
+                    model.put("confirmedDate", quotation.getDateConfirmed().toString());
+                    emailService.sendMail(supplierEmail, cc, "Thông tin chào hàng của bạn đã được duyệt", model);
                     return ResponseEntity.status(HttpStatus.OK)
                             .body(new ResponseObject("OK", "Successfully", ""));
                 }
@@ -311,32 +381,37 @@ public class SupplierService {
                     (List<StatusType>) convertedFilters.get("statusList"),
                     (LocalDate) convertedFilters.get("from"),
                     (LocalDate) convertedFilters.get("to"),
+                    (String) convertedFilters.get("search"),
                     pageable);
         } else {
             quotationPage = quotationRepository.findAllWithCondition(pageable);
+            System.out.println("content: " + quotationPage.getContent());
         }
-        return quotationPage.hasContent() ?
-                ResponseEntity.ok(new ResponseObject("OK", "Successfully", quotationPage.getContent().stream().map(
-                        quotation -> {
-                            QuotationDTO quotationDTO = modelMapper.map(quotation, QuotationDTO.class);
-                            List<ZoneDeliveryDTO> zoneDeliveryDTOs = quotation.getZoneDeliveryList().stream()
-                                    .map(zoneDelivery -> modelMapper.map(zoneDelivery, ZoneDeliveryDTO.class))
-                                    .collect(Collectors.toList());
-                            List<ProductImageUrlDTO> productImageUrlDTOS = quotation.getProductImageList().stream()
-                                    .map(productImage -> modelMapper.map(productImage, ProductImageUrlDTO.class))
-                                    .collect(Collectors.toList());
-                            quotationDTO.setProductImageUrlList(productImageUrlDTOS);
-                            quotationDTO.setZoneDeliveries(zoneDeliveryDTOs);
-                            return quotationDTO;
-                        }
-                ).collect(Collectors.toList())))
-                :
-                ResponseEntity.ok(new ResponseObject("Not found", "Not found", ""));
+        if (quotationPage.hasContent()) {
+            System.out.println("content: " + quotationPage.getContent());
+            ResponseObject responseObject = new ResponseObject("OK", "Successfully", quotationPage.getContent().stream().map(
+                    quotation -> {
+                        QuotationDTO quotationDTO = modelMapper.map(quotation, QuotationDTO.class);
+                        List<ZoneDeliveryDTO> zoneDeliveryDTOs = quotation.getZoneDeliveryList().stream()
+                                .map(zoneDelivery -> modelMapper.map(zoneDelivery, ZoneDeliveryDTO.class))
+                                .collect(Collectors.toList());
+                        List<ProductImageUrlDTO> productImageUrlDTOS = quotation.getProductImageList().stream()
+                                .map(productImage -> modelMapper.map(productImage, ProductImageUrlDTO.class))
+                                .collect(Collectors.toList());
+                        quotationDTO.setProductImageUrlList(productImageUrlDTOS);
+                        quotationDTO.setZoneDeliveries(zoneDeliveryDTOs);
+                        return quotationDTO;
+                    }
+            ).collect(Collectors.toList()));
+            responseObject.setTotalPages(quotationPage.getTotalPages());
+            return ResponseEntity.status(HttpStatus.OK).body(responseObject);
+        }
+        return ResponseEntity.ok(new ResponseObject("Not found", "Not found", ""));
     }
 
     public ResponseEntity<ResponseObject> getFilteredSupplyCapacity(Pageable pageable, Map<String, Object> filters) {
         Page<SupplyCapacity> supplyCapacityPage;
-        if (filters != null && !filters.isEmpty()) {
+        if (filters != null && !filters.isEmpty() && filters.size() != 3) {
             Map<String, Object> convertedFilters = convertFilters(filters);
             supplyCapacityPage = supplyCapacityRepository.findByFilters(
                     (List<StatusType>) convertedFilters.get("statusList"),
@@ -347,13 +422,16 @@ public class SupplierService {
         } else {
             supplyCapacityPage = supplyCapacityRepository.findLatestByProductId(pageable);
         }
-        return supplyCapacityPage.hasContent() ?
-                ResponseEntity.ok(new ResponseObject("OK", "Successfully", supplyCapacityPage.getContent().stream().map(
-                        supplyCapacity -> modelMapper.map(
-                                supplyCapacity, SupplyCapacityDTO.class
-                        )
-                ).toList())) :
-                ResponseEntity.ok(new ResponseObject("Not found", "Not found", ""));
+        if (supplyCapacityPage.hasContent()) {
+            ResponseObject responseObject = new  ResponseObject("OK", "Successfully", supplyCapacityPage.getContent().stream().map(
+                    supplyCapacity -> modelMapper.map(
+                            supplyCapacity, SupplyCapacityDTO.class
+                    )
+            ).toList());
+            responseObject.setTotalPages(supplyCapacityPage.getTotalPages());
+            return ResponseEntity.status(HttpStatus.OK).body(responseObject);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
     }
 
     public ResponseEntity<ResponseObject> findQuotationById(Integer id) {
@@ -377,10 +455,10 @@ public class SupplierService {
         }
     }
 
-    public ResponseEntity<ResponseObject> findAllSupplyCapacity() {
+    public ResponseEntity<ResponseObject> findToCompareSupplyCapacity(Integer productId) {
         List<SupplyCapacityDTO> supplyCapacityListDTO = null;
         try {
-            supplyCapacityListDTO = supplyCapacityRepository.findAll().stream().map(
+            supplyCapacityListDTO = supplyCapacityRepository.findToCompare(productId).stream().map(
                     supplyCapacity -> modelMapper.map(
                             supplyCapacity, SupplyCapacityDTO.class
                     )
@@ -425,7 +503,7 @@ public class SupplierService {
                     if (accountOptional.isPresent()) {
                         supplierEmail = accountOptional.get().getEmail();
                     }
-                    emailService.sendMail(supplierEmail, cc, "Thông tin chào hàng của bạn đã được duyệt", "Đây là email test");
+//                    emailService.sendMail(supplierEmail, cc, "Thông tin chào hàng của bạn đã được duyệt", "Đây là email test");
                     return ResponseEntity.status(HttpStatus.OK)
                             .body(new ResponseObject("OK", "Successfully", ""));
                 }

@@ -34,4 +34,17 @@ public interface SupplyCapacityRepository extends JpaRepository<SupplyCapacity, 
             "      GROUP BY s.product_id) latest_sc " +
             "ON sc.product_id = latest_sc.productId AND sc.created_at = latest_sc.latestCreatedAt", nativeQuery = true)
     Page<SupplyCapacity> findLatestByProductId(Pageable pageable);
+
+    @Query(value = "SELECT sc.* FROM supply_capacity sc " +
+            "JOIN (SELECT s.product_id AS productId, s.created_at AS latestCreatedAt " +
+            "      FROM supply_capacity s " +
+            "      WHERE s.product_id = :productId " +
+            "      ORDER BY s.created_at DESC " +
+            "      LIMIT 2) latest_sc " +
+            "ON sc.product_id = latest_sc.productId AND sc.created_at = latest_sc.latestCreatedAt", nativeQuery = true)
+    List<SupplyCapacity> findToCompare(@Param("productId") Integer productId);
+
+
+
+
 }
