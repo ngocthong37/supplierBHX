@@ -53,6 +53,7 @@ public class AuthService {
                 .role(request.getRole())
                 .status(request.getStatus())
                 .email(request.getEmail())
+                .name(request.getName())
                 .supplier(supplier)
                 .build();
         var savedUser = repository.save(user);

@@ -5,4 +5,5 @@ public enum UnitType {
     kilogram,
     gram,
     tonne,
+    unit
 }

@@ -34,7 +34,7 @@ public class RatingFeedbackController {
     ResponseEntity<ResponseObject> findByRatingProductId(@PathVariable Integer ratingProductId){
         return ratingFeedbackService.findByRatingProductId(ratingProductId);
     }
-    @PostMapping("/insert")
+    @PostMapping(value = "/insert", consumes = "application/json", produces = "application/json")
     ResponseEntity<ResponseObject> insert(@RequestBody @Validated RatingFeedback ratingFeedback, BindingResult result){
         if (!result.hasErrors()){
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", ratingFeedbackService.insert(ratingFeedback)));

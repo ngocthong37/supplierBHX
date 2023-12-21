@@ -54,7 +54,7 @@ public class PurchaseOrder {
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="purchaseOrder")
     private List<PurchaseOrderDetail> purchaseOrderDetails;
 
-    @JsonManagedReference(value = "purchaseOrder-problemDetails")
+    @JsonManagedReference(value = "purchaseOrder-problem")
     @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
     private List<Problem> problems;
 

@@ -40,7 +40,7 @@ public class Problem {
     @OneToMany(mappedBy = "problem")
     private List<ProblemDetail> problemDetails;
 
-    @JsonBackReference
+    @JsonBackReference(value = "purchaseOrder-problem")
     @ManyToOne
     @JoinColumn(name = "purchase_order_id")
     private PurchaseOrder purchaseOrder;
