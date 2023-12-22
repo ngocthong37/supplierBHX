@@ -28,21 +28,21 @@ public interface SupplyCapacityRepository extends JpaRepository<SupplyCapacity, 
             @Param("to") LocalDate to,
             @Param("search") String search,
             Pageable pageable);
-    @Query(value = "SELECT sc.* FROM supply_capacity sc " +
-            "JOIN (SELECT s.product_id AS productId, MAX(s.created_at) AS latestCreatedAt " +
-            "      FROM supply_capacity s " +
-            "      GROUP BY s.product_id) latest_sc " +
-            "ON sc.product_id = latest_sc.productId AND sc.created_at = latest_sc.latestCreatedAt", nativeQuery = true)
+    @Query("SELECT s FROM SupplyCapacity s " +
+            "WHERE (s.product.id, s.createdAt) IN " +
+            "(SELECT s2.product.id, MAX(s2.createdAt) " +
+            " FROM SupplyCapacity s2 " +
+            " GROUP BY s2.product.id)")
     Page<SupplyCapacity> findLatestByProductId(Pageable pageable);
 
-    @Query(value = "SELECT sc.* FROM supply_capacity sc " +
-            "JOIN (SELECT s.product_id AS productId, s.created_at AS latestCreatedAt " +
-            "      FROM supply_capacity s " +
-            "      WHERE s.product_id = :productId " +
-            "      ORDER BY s.created_at DESC " +
-            "      LIMIT 2) latest_sc " +
-            "ON sc.product_id = latest_sc.productId AND sc.created_at = latest_sc.latestCreatedAt", nativeQuery = true)
+
+    @Query("SELECT s FROM SupplyCapacity s " +
+            "WHERE s.product.id = :productId " +
+            "ORDER BY s.createdAt DESC " +
+            "LIMIT 2")
     List<SupplyCapacity> findToCompare(@Param("productId") Integer productId);
+
+
 
 
 

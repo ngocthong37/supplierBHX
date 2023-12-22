@@ -23,7 +23,7 @@ public class Product {
     private String code;
     private String name;
 
-    @JsonBackReference(value ="supplyCapacity-product")
+//    @JsonBackReference(value ="supplyCapacity-product")
     @OneToMany(mappedBy = "product")
     private List<SupplyCapacity> supplyCapacity;
 

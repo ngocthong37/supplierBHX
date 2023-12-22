@@ -50,7 +50,7 @@ public class SupplyCapacity {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @JsonManagedReference(value ="supplyCapacity-product")
+//    @JsonManagedReference(value ="supplyCapacity-product")
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
