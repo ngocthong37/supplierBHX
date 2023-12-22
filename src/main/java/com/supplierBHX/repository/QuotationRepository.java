@@ -48,8 +48,9 @@ public interface QuotationRepository extends JpaRepository<Quotation, Integer> {
 
     @Transactional
     @Modifying
-    @Query("UPDATE Quotation quotation SET quotation.isRemove = True where quotation.id = :quotationId")
-    Integer deleteQuotation(Integer quotationId);
+    @Query("DELETE FROM Quotation q WHERE q.id = :quotationId")
+    void deleteQuotationById(@Param("quotationId") Integer quotationId);
+
 
     @Query("SELECT q FROM Quotation q where q.isRemove = False")
     Page<Quotation> findAllWithCondition(Pageable pageable);

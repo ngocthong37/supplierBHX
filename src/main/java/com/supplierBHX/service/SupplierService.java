@@ -128,15 +128,28 @@ public class SupplierService {
     }
 
     public ResponseEntity<Object> deleteQuotation(Integer quotationId) {
-        var res = quotationRepository.deleteQuotation(quotationId);
-        if (res > 0) {
+        try {
+            productImageRepository.deleteImageProductById(quotationId);
+        } catch (Exception e) {
+            System.out.println("Loi roi: " + e);
+        }
+        try {
+            zoneDeliveryRepository.deleteZoneDeliveriesById(quotationId);
+        }
+        catch (Exception e) {
+            System.out.println("Loi roi: " + e);
+        }
+        try
+        {
+            quotationRepository.deleteQuotationById(quotationId);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseObject("OK", "Successfully", ""));
         }
-        else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseObject("ERROR", "An error occurred", ""));
+        catch (Exception e) {
+            System.out.println("Loi roi: " + e);
         }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ResponseObject("ERROR", "An error occurred", ""));
     }
 
 
@@ -159,7 +172,8 @@ public class SupplierService {
             String beginDate = jsonObjectQuotation.has("beginDate") && !jsonObjectQuotation.get("beginDate").asText().isEmpty() ?
                     jsonObjectQuotation.get("beginDate").asText() : null;
             String endDate = jsonObjectQuotation.has("endDate") && !jsonObjectQuotation.get("endDate").asText().isEmpty() ?
-                    jsonObjectQuotation.get("endDate").asText() : null;            String description = jsonObjectQuotation.get("description") != null ?
+                    jsonObjectQuotation.get("endDate").asText() : null;
+            String description = jsonObjectQuotation.get("description") != null ?
                     jsonObjectQuotation.get("description").asText() : "";
             Integer accountId = jsonObjectQuotation.get("accountId") != null ?
                     jsonObjectQuotation.get("accountId").asInt() : 1;
@@ -177,8 +191,8 @@ public class SupplierService {
                 beginParsedDate = LocalDate.parse(beginDate, dateFormatter);
                 endParsedDate = LocalDate.parse(endDate, dateFormatter);
             } else {
-                 beginParsedDate = null;
-                 endParsedDate = null;
+                beginParsedDate = null;
+                endParsedDate = null;
             }
             Supplier supplier = new Supplier();
             supplier.setId(supplierId);
@@ -423,7 +437,7 @@ public class SupplierService {
             supplyCapacityPage = supplyCapacityRepository.findLatestByProductId(pageable);
         }
         if (supplyCapacityPage.hasContent()) {
-            ResponseObject responseObject = new  ResponseObject("OK", "Successfully", supplyCapacityPage.getContent().stream().map(
+            ResponseObject responseObject = new ResponseObject("OK", "Successfully", supplyCapacityPage.getContent().stream().map(
                     supplyCapacity -> modelMapper.map(
                             supplyCapacity, SupplyCapacityDTO.class
                     )
@@ -562,8 +576,7 @@ public class SupplierService {
         Optional<Supplier> supplier = supplierRepository.findById(id);
         if (supplier.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Successfully", supplier.stream().map(supplier1 -> modelMapper.map(supplier1, SupplierDTO.class)).collect(Collectors.toList())));
-        }
-        else {
+        } else {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Not found", "Not found", ""));
         }
     }
