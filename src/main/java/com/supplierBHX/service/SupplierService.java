@@ -411,7 +411,7 @@ public class SupplierService {
 
     public ResponseEntity<ResponseObject> getFilteredSupplyCapacity(Pageable pageable, Map<String, Object> filters) {
         Page<SupplyCapacity> supplyCapacityPage;
-        if (filters != null && !filters.isEmpty() && filters.size() != 3) {
+        if (filters != null && !filters.isEmpty()) {
             Map<String, Object> convertedFilters = convertFilters(filters);
             supplyCapacityPage = supplyCapacityRepository.findByFilters(
                     (List<StatusType>) convertedFilters.get("statusList"),
